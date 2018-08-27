@@ -1,0 +1,23 @@
+baseURL = "localhost:1313"
+languageCode = "en-US"
+defaultContentLanguage = "en"
+
+title = "API Scout :: Finding your APIs in Kubernetes"
+theme = "hugo-theme-learn"
+metaDataFormat = "yaml"
+defaultContentLanguageInSubdir = true
+
+[params]
+  editURL = ""
+  description = "Documentation for API Scout"
+  author = "Project Flogo"
+  showVisitedLinks = false
+  disableAssetsBusting = false
+  disableInlineCopyToClipBoard = true
+  disableShortcutsTitle = true
+  disableLanguageSwitchingButton = true
+  ordersectionsby = "title"
+  themeVariant = "green"
+
+[outputs]
+home = [ "HTML", "RSS", "JSON"]
