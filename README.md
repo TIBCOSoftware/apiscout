@@ -7,7 +7,7 @@ API Scout, helps you get up-to-date API docs to your developers by simply annota
 The docker image that is deployed to Kubernetes has several components:
 * The container itself is based on [nginx:1.15-alpine](https://hub.docker.com/_/nginx/)
 * The webapp is a staticly generated site by [Hugo](https://github.com/gohugoio/hugo) using the [Learn](https://themes.gohugo.io/hugo-theme-learn/) theme and an additonal [shortcode for OpenAPI](https://github.com/tenfourty/hugo-openapispec-shortcode)
-* A [Flogo](http://flogo.io) app that connects to the Kubernetes cluster using a default role to find services that need to be indexed
+* A server app that connects to the Kubernetes cluster using a default role to watch for services that need to be indexed
 
 _Hugo is downloaded and embedded during the build of the container_
 
@@ -52,7 +52,6 @@ apiscout has a few environment variables that the docker container (and thus the
 * **MODE**: The mode in which apiscout is running (can be either KUBE or LOCAL)
 * **EXTERNALIP**: The external IP address of the Kubernetes cluster in case of LOCAL mode
 * **HUGODIR**: The base directory for Hugo
-* **INTERVAL**: The timer interval for the server
 
 ## License
 See the [LICENSE](./LICENSE) file
