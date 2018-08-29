@@ -13,6 +13,6 @@ func (srv *Server) handleEvent(event watch.Event) {
 	v := &v1.Service{}
 	if reflect.TypeOf(event.Object) == reflect.TypeOf(v) {
 		i := reflect.ValueOf(event.Object).Interface()
-		srv.handleService(i.(*v1.Service), event.Type)
+		srv.handleService(i.(*v1.Service), event.Type, 0)
 	}
 }

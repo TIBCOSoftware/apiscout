@@ -22,7 +22,7 @@ const (
 
 // handleService takes the Kubernetes service object and the EventType as input to determine what
 // to do with the event
-func (srv *Server) handleService(service *v1.Service, eventType watch.EventType) {
+func (srv *Server) handleService(service *v1.Service, eventType watch.EventType, retryCount int) {
 	log.Printf("Received %s for %s\n", eventType, service.Name)
 
 	switch eventType {
@@ -30,8 +30,12 @@ func (srv *Server) handleService(service *v1.Service, eventType watch.EventType)
 		if service.Annotations[annotation] == "true" {
 			err := add(service, srv)
 			if err != nil {
-				log.Println(err.Error())
-				return
+				if strings.Contains(err.Error(), "dial tcp") {
+					srv.retry(service, eventType, retryCount+1)
+				} else {
+					log.Println(err.Error())
+					return
+				}
 			}
 		}
 	case watch.Deleted:
@@ -48,8 +52,12 @@ func (srv *Server) handleService(service *v1.Service, eventType watch.EventType)
 		if service.Annotations[annotation] == "true" {
 			err := add(service, srv)
 			if err != nil {
-				log.Println(err.Error())
-				return
+				if strings.Contains(err.Error(), "dial tcp") {
+					srv.retry(service, eventType, retryCount+1)
+				} else {
+					log.Println(err.Error())
+					return
+				}
 			}
 		}
 	case watch.Error:
