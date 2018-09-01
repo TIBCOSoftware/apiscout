@@ -37,6 +37,8 @@ spec:
           value: "KUBE"
         - name: HUGODIR
           value: "/tmp"
+        - name: EXTERNALIP
+          value: "192.168.99.100"
         imagePullPolicy: Never
         ports:
         - containerPort: 80

@@ -83,12 +83,12 @@ func add(service *v1.Service, srv *Server) error {
 		var ip string
 		var port int32
 
-		if strings.ToUpper(srv.RunMode) == "KUBE" {
-			ip = service.Spec.ClusterIP
-			port = service.Spec.Ports[0].Port
-		} else {
+		if len(srv.ExternalIP) > 0 {
 			ip = srv.ExternalIP
 			port = service.Spec.Ports[0].NodePort
+		} else {
+			ip = service.Spec.ClusterIP
+			port = service.Spec.Ports[0].Port
 		}
 
 		apidoc, err := util.GetAPIDoc(fmt.Sprintf("http://%s:%d%s", ip, port, service.Annotations[swaggerURL]))

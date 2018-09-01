@@ -14,7 +14,6 @@ package main
 // The imports
 import (
 	"log"
-	"strings"
 
 	"github.com/TIBCOSoftware/apiscout/server/server"
 	"github.com/TIBCOSoftware/apiscout/server/util"
@@ -47,7 +46,7 @@ func main() {
 	log.Printf("Run mode         : %s\n", runMode)
 	log.Printf("Swagger store    : %s\n", swaggerStore)
 	log.Printf("Hugo store       : %s\n", hugoStore)
-	if strings.ToUpper(runMode) != "KUBE" {
+	if len(externalIP) > 0 {
 		log.Printf("External IP      : %s\n", externalIP)
 	}
 	if len(hugoDir) > 0 {
