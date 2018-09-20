@@ -17,6 +17,9 @@ help:
 	@echo - clean-docker : Stops and removes all containers and images for apiscout
 	@echo - clean-kube : Removes the apiscout service and deployment from Kubernetes
 	@echo
+	@echo Getting the dependecies:
+	@echo - deps : Get dependencies to build the server
+	@echo
 	@echo Build targets:
 	@echo - build-site : Builds the Hugo distribution in dist
 	@echo - build-server : Builds the Flogo server in dist
@@ -44,6 +47,10 @@ clean-docker:
 clean-kube:
 	kubectl delete svc apiscout-svc
 	kubectl delete deployment apiscout
+
+#--- Get dependencies ---
+deps:
+        go get -u github.com/TIBCOSoftware/apiscout/server
 
 #--- Build targets ---
 build-site:
