@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	"github.com/TIBCOSoftware/flogo-contrib/activity/log"
-	"github.com/TIBCOSoftware/flogo-contrib/activity/rest"
 	rt "github.com/TIBCOSoftware/flogo-contrib/trigger/rest"
 	"github.com/TIBCOSoftware/flogo-lib/core/data"
 	"github.com/TIBCOSoftware/flogo-lib/engine"
@@ -20,8 +19,7 @@ import (
 )
 
 var (
-	httpport       = os.Getenv("HTTPPORT")
-	paymentservice = os.Getenv("PAYMENTSERVICE")
+	httpport = getEnvKey("HTTPPORT", "8080")
 )
 
 func main() {
@@ -112,22 +110,12 @@ func handler(ctx context.Context, inputs map[string]*data.Attribute) (map[string
 	}
 	balance := strconv.Itoa(out["result"].Value().(int))
 
-	// Call out to another service
-	in = map[string]interface{}{"method": "GET", "uri": fmt.Sprintf("%s%s", paymentservice, id)}
-	logger.Info(in)
-	out, err = flogo.EvalActivity(&rest.RESTActivity{}, in)
-	if err != nil {
-		return nil, err
-	}
-	expectedDate := out["result"].Value().(map[string]interface{})["expectedDate"].(string)
-
 	// The return message is a map[string]*data.Attribute which we'll have to construct
 	response := make(map[string]interface{})
 	response["id"] = id
 	response["ref"] = ref
 	response["amount"] = amount
 	response["balance"] = balance
-	response["expectedPaymentDate"] = expectedDate
 	response["currency"] = "USD"
 
 	ret := make(map[string]*data.Attribute)
@@ -135,4 +123,13 @@ func handler(ctx context.Context, inputs map[string]*data.Attribute) (map[string
 	ret["data"], _ = data.NewAttribute("data", data.TypeAny, response)
 
 	return ret, nil
+}
+
+// getEnvKey tries to get the specified key from the OS environment and returns either the
+// value or the fallback that was provided
+func getEnvKey(key string, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }

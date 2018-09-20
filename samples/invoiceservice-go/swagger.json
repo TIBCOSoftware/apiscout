@@ -14,11 +14,6 @@
 					"default": "USD",
 					"type": "string"
 				},
-				"expectedPaymentDate": {
-					"default": "2018-03-02",
-					"format": "date",
-					"type": "string"
-				},
 				"id": {
 					"default": "1234",
 					"type": "string"
@@ -61,7 +56,6 @@
 								"amount": 1162,
 								"balance": 718,
 								"currency": "USD",
-								"expectedPaymentDate": "2018-03-02",
 								"id": "1234",
 								"ref": "INV-1234"
 							}
