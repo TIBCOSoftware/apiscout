@@ -50,7 +50,7 @@ clean-kube:
 
 #--- Get dependencies ---
 deps:
-        go get -u github.com/TIBCOSoftware/apiscout/server
+	go get -u github.com/TIBCOSoftware/apiscout/server
 
 #--- Build targets ---
 build-site:
