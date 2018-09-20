@@ -12,7 +12,7 @@ The docker image that is deployed to Kubernetes has several components:
 _Hugo is downloaded and embedded during the build of the container_
 
 ## Build and run
-apiscout has a _Makefile_ that can be used for most of the operations
+apiscout has a _Makefile_ that can be used for most of the operations. Make sure you have installed Go Programming Language, set variable GOPATH and added $GOPATH/bin in your PATH
 
 ```
 usage: make [target]
@@ -22,6 +22,9 @@ usage: make [target]
 * **clean-all** : Removes the dist directory
 * **clean-docker** : Stops and removes all containers and images for apiscout
 * **clean-kube** : Removes the apiscout service and deployment from Kubernetes
+
+### Cleaning targets:
+* **deps** : Gets required dependencies. Run before the build-server target
 
 ### Build targets:
 * **build-site** : Builds the Hugo distribution in dist
