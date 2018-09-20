@@ -23,7 +23,7 @@ usage: make [target]
 * **clean-docker** : Stops and removes all containers and images for apiscout
 * **clean-kube** : Removes the apiscout service and deployment from Kubernetes
 
-### Cleaning targets:
+### Dependency targets:
 * **deps** : Gets required dependencies. Run before the build-server target
 
 ### Build targets:
