@@ -30,7 +30,7 @@ To build and deploy the app to Kubernetes, run the make targets for _deps_, _bui
 
 ## API
 After starting the app, it will register with two endpoints:
-* **/api/invoices/:id**: Get the invoice details for the invoice ID. The app also reaches out to the [paymentservice](../paymentservice-go) app
+* **/api/invoices/:id**: Get the invoice details for the invoice ID.
 * **/swagger**: Get the OpenAPI specification for this app
 
 ## API Scout
