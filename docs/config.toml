@@ -1,4 +1,4 @@
-baseURL = "localhost:1313"
+baseURL = "https://tibcosoftware.github.io/apiscout/"
 languageCode = "en-US"
 defaultContentLanguage = "en"
 
@@ -9,14 +9,14 @@ defaultContentLanguageInSubdir = true
 
 [params]
   editURL = ""
-  description = "API Scout"
+  description = "Documentation for API Scout"
   author = "API Scout"
   showVisitedLinks = false
   disableAssetsBusting = false
   disableInlineCopyToClipBoard = true
   disableShortcutsTitle = true
   disableLanguageSwitchingButton = true
-  ordersectionsby = "title"
+  ordersectionsby = "weight"
   themeVariant = "green"
 
 [outputs]

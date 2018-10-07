@@ -4,101 +4,84 @@
 CURRDIR = `pwd`
 EXTIP = `minikube ip`
 USER = `whoami`
-DOCKERREPO = retgits
+DOCKERREPO = `whoami`
 
 #--- Help ---
 help:
-	@echo Makefile for apiscout
-	@echo  
-	@echo usage: make [target]
+	@echo 
+	@echo Makefile targets
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 	@echo
-	@echo Cleaning targets:
-	@echo - clean-all : Removes the dist directory
-	@echo - clean-docker : Stops and removes all containers and images for apiscout
-	@echo - clean-kube : Removes the apiscout service and deployment from Kubernetes
-	@echo
-	@echo Getting the dependecies:
-	@echo - deps : Get dependencies to build the server
-	@echo
-	@echo Build targets:
-	@echo - build-site : Builds the Hugo distribution in dist
-	@echo - build-server : Builds the Flogo server in dist
-	@echo - build-docker : Builds a docker image from the dist directory
-	@echo - build-all : Performs clean-all and executes all build targets
-	@echo
-	@echo Run targets
-	@echo - run-server : Builds the  in the server directory and runs it with default settings
-	@echo - run-docker : Runs a docker container with default settings
-	@echo - run-hugo : Runs the embedded Hugo server on port 1313
-	@echo - run-kube : Deploys apiscout to Kubernetes
-	@echo
-	@echo Stop targets
-	@echo - stop-docker : Stop and remove the running apiscout container
 
 #--- Clean up targets ---
-clean-all:
+clean-all: ## Removes the dist directory
 	rm -rf ./dist
 	
-clean-docker:
+clean-docker: ## Stops and removes all containers and images for apiscout
 	docker stop apiscout
 	docker rm apiscout
 	docker rmi retgits/apiscout
 
-clean-kube:
+clean-kube: ## Removes the apiscout service and deployment from Kubernetes
 	kubectl delete svc apiscout-svc
 	kubectl delete deployment apiscout
 
 #--- Get dependencies ---
-deps:
+deps: ## Get dependencies to build the server
 	go get -u github.com/TIBCOSoftware/apiscout/server
 
 #--- Build targets ---
-build-site:
+build-site: ## Builds the Hugo distribution in dist
 	mkdir -p dist
 	cp -r webapp/* ./dist
 
-build-server:
+build-server: ## Builds the server app in dist
 	mkdir -p dist
 	cd server && go generate && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../dist/server *.go
 
-build-docker:
+build-docker: ## Builds a docker image from the dist directory
 	cp Dockerfile ./dist/Dockerfile
 	cp -R ./nginx/ ./dist/nginx
 	cd dist && docker build . -t $(DOCKERREPO)/apiscout:latest
 
-build-all: clean-all build-site build-server build-docker
+build-all: ## Performs clean-all and executes all build targets
+	clean-all build-site build-server build-docker
 
 #--- Run targets ---
-run-server:
+run-server: ## Builds the  in the server directory and runs it with default settings
 	cd server && go generate && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../dist/server *.go
 	MODE=LOCAL HUGODIR=$(CURRDIR)/webapp HUGOSTORE=$(CURRDIR)/webapp/content/apis SWAGGERSTORE=$(CURRDIR)/webapp/static/swaggerdocs EXTERNALIP=$(EXTIP) ./dist/server
 
-run-docker:
+run-docker: ## Runs a docker container with default settings
 	docker run -it --rm -p 80:80 -v $(HOME)/.kube:/root/.kube -v $(HOME)/.minikube:/home/$(USER)/.minikube -e MODE=LOCAL -e HUGODIR="/tmp" -e EXTERNALIP=$(EXTIP) -e HUGOCMD="sh -c \"cd /tmp && hugo\"" --name=apiscout $(DOCKERREPO)/apiscout:latest
 
-run-hugo:
+run-hugo: ## Runs the embedded Hugo server on port 1313
 	cd webapp && hugo server -D --disableFastRender
 
-run-kube:
+run-docs: ## Runs the embedded Hugo server on port 1313 for the documentation
+	cd docs && hugo server -D --disableFastRender --themesDir ../webapp/themes
+
+run-kube: ## Deploys apiscout to Kubernetes
 	kubectl apply -f ./kubernetes/apiscout.yml
 
 #--- Stop targets ---
-stop-docker:
+stop-docker: ## Stop and remove the running apiscout container
 	docker stop apiscout && docker rm apiscout
 
 #--- Minikube targets ---
-minikube-install:
+minikube-install: ## Install Minikube on this machine
 	curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && sudo cp minikube /usr/local/bin/ && rm minikube
-minikube-start:
+minikube-start: ## Start Minikube with default configuration
 	export MINIKUBE_WANTUPDATENOTIFICATION=false
 	export MINIKUBE_WANTREPORTERRORPROMPT=false
 	export MINIKUBE_HOME=$(HOME)
 	export CHANGE_MINIKUBE_NONE_USER=true
 	export KUBECONFIG=$(HOME)/.kube/config
 	sudo -E minikube start --vm-driver=none
-minikube-stop:
+minikube-stop: ## Stop Minikube
 	minikube stop
-minikube-delete: minikube-stop
+minikube-delete: ## Delete the Minikube installation
+	minikube-stop
 	minikube delete
-minikube-show:
+minikube-show: ## Show the API Scout UI that is deployed to Minikube
 	open `minikube service apiscout-svc --url`
