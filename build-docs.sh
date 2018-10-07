@@ -19,7 +19,7 @@ prerequisites() {
 #--- Execute build ---
 build() {
     echo "Build docs site..."
-    cd docs && hugo
+    cd docs && hugo --themesDir ../webapp/themes
     cd public && ls -alh
 }
 

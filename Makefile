@@ -5,6 +5,7 @@ CURRDIR = `pwd`
 EXTIP = `minikube ip`
 USER = `whoami`
 DOCKERREPO = `whoami`
+KUBEFILES = .
 
 #--- Help ---
 help:
@@ -62,7 +63,7 @@ run-docs: ## Runs the embedded Hugo server on port 1313 for the documentation
 	cd docs && hugo server -D --disableFastRender --themesDir ../webapp/themes
 
 run-kube: ## Deploys apiscout to Kubernetes
-	kubectl apply -f ./kubernetes/apiscout.yml
+	kubectl apply -f ${KUBEFILES}/apiscout.yml
 
 #--- Stop targets ---
 stop-docker: ## Stop and remove the running apiscout container
