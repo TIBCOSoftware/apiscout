@@ -20,8 +20,6 @@ title: {{.title}}
 weight: 1000
 ---
 
-{{.description}}
-
 {{.json}}`
 
 // GetAPIDoc performs an HTTP request to a specified URL to retrieve the OpenAPI document
@@ -96,18 +94,14 @@ func WriteSwaggerToDisk(name string, apidoc string, svchost string, swaggerStore
 	}
 
 	// Prepare the Markdown file for Hugo
-	var description, title string
-	if val, ok := swagger["info"].(map[string]interface{})["description"]; ok {
-		description = val.(string)
-	}
+	var title string
 	if val, ok := swagger["info"].(map[string]interface{})["title"]; ok {
 		title = val.(string)
 	}
 
 	dataMap := make(map[string]interface{})
-	dataMap["description"] = description
 	dataMap["title"] = title
-	dataMap["json"] = fmt.Sprintf("{{< oai-spec url=\"../../../swaggerdocs/%s.json\" >}}", strings.Replace(strings.ToLower(name), " ", "-", -1))
+	dataMap["json"] = fmt.Sprintf("{{< oas3 url=\"../../../swaggerdocs/%s.json\" >}}", strings.Replace(strings.ToLower(name), " ", "-", -1))
 
 	// Render the Markdown file based on the template
 	t := template.Must(template.New("top").Parse(markdown))
