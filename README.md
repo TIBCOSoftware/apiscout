@@ -22,26 +22,27 @@ API Scout has a _Makefile_ that can be used for most of the operations. Make sur
 usage: make [target]
 ```
 
-Makefile targets
-build-all                      Performs clean-all and executes all build targets
-build-docker                   Builds a docker image from the dist directory
-build-server                   Builds the server app in dist
-build-site                     Builds the Hugo distribution in dist
-clean-all                      Removes the dist directory
-clean-docker                   Stops and removes all containers and images for apiscout
-clean-kube                     Removes the apiscout service and deployment from Kubernetes
-deps                           Get dependencies to build the server
-minikube-delete                Delete the Minikube installation
-minikube-install               Install Minikube on this machine
-minikube-show                  Show the API Scout UI that is deployed to Minikube
-minikube-start                 Start Minikube with default configuration
-minikube-stop                  Stop Minikube
-run-docker                     Runs a docker container with default settings
-run-docs                       Runs the embedded Hugo server on port 1313 for the documentation
-run-hugo                       Runs the embedded Hugo server on port 1313
-run-kube                       Deploys apiscout to Kubernetes
-run-server                     Builds the  in the server directory and runs it with default settings
-stop-docker                    Stop and remove the running apiscout container
+| Makefile targets | Description                                                           |
+|------------------|-----------------------------------------------------------------------|
+| build-all        | Performs clean-all and executes all build targets                     |
+| build-docker     | Builds a docker image from the dist directory                         |
+| build-server     | Builds the server app in dist                                         |
+| build-site       | Builds the Hugo distribution in dist                                  |
+| clean-all        | Removes the dist directory                                            |
+| clean-docker     | Stops and removes all containers and images for apiscout              |
+| clean-kube       | Removes the apiscout service and deployment from Kubernetes           |
+| deps             | Get dependencies to build the server                                  |
+| minikube-delete  | Delete the Minikube installation                                      |
+| minikube-install | Install Minikube on this machine                                      |
+| minikube-show    | Show the API Scout UI that is deployed to Minikube                    |
+| minikube-start   | Start Minikube with default configuration                             |
+| minikube-stop    | Stop Minikube                                                         |
+| run-docker       | Runs a docker container with default settings                         |
+| run-docs         | Runs the embedded Hugo server on port 1313 for the documentation      |
+| run-hugo         | Runs the embedded Hugo server on port 1313                            |
+| run-kube         | Deploys apiscout to Kubernetes                                        |
+| run-server       | Builds the  in the server directory and runs it with default settings |
+| stop-docker      | Stop and remove the running apiscout container                        |
 
 ## Requirements for Kubernetes
 
@@ -65,4 +66,4 @@ apiscout has a few environment variables that the docker container (and thus the
 ## License
 See the [LICENSE](./LICENSE) file
 
-_The amazingly cute dog icon is by Freepik from <www.flaticon.com> is licensed by CC 3.0 BY_
+_The logo made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)_
