@@ -46,7 +46,7 @@ usage: make [target]
 
 ## Requirements for Kubernetes
 
-To be able to view the services, apiscout needs access to the Kubernetes cluster using the default service account. By default (pun intended) this account doesn't have access to view services so during deployment a new _rolebinding_ is created. After starting, it will poll the Kubernetes API server every 10 seconds, or at the timeinterval specified by the environment variable `INTERVAL`.
+To be able to view the services, apiscout needs access to the Kubernetes cluster using the default service account. By default (pun intended) this account doesn't have access to view services so during deployment a new _rolebinding_ is created. After starting, it will register a watcher with the Kubernetes API Server, so that it receives events when something occurs in the cluster.
 
 apiscout looks for two annotations to be able to index a service:
 
