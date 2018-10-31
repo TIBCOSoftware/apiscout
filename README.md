@@ -63,6 +63,85 @@ apiscout has a few environment variables that the docker container (and thus the
 * **EXTERNALIP**: The external IP address of the Kubernetes cluster in case of LOCAL mode
 * **HUGODIR**: The base directory for Hugo
 
+## Getting started
+
+This section provides minimal steps to get `apiscout` running inside a kubernetes cluster on local machine / VM of your choice.
+
+### Prerequisites
+
+* Docker 
+* Kubernetes environment (for example [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/))
+
+### Steps to follow
+
+1. Start minikube
+```bash
+$ make minikube-start
+```
+
+2. Build and deploy apiscout
+
+```bash
+# Install dependencies
+$ make deps
+
+# Build apiscout docker image
+$ make build-all
+```
+* Update `image` with apiscout docker image name built in the previous step and `EXTERNALIP` value with minikube IP in apiscout.yml 
+
+```bash
+# Deploy apiscout to Kubernetes
+$ make run-kube
+```
+
+3. Build and deploy sample micro service
+
+```bash
+# Navigate to samples/invoiceservice-go folder
+$ cd samples/invoiceservice-go
+
+# Install dependencies
+$ make deps
+
+# Build sample microservice application
+$ make build-app
+
+# Build dcoker image with the sample microservice application
+$ make build-docker
+
+# Deploy sample application to Kubernetes
+$ make run-kube
+
+```
+
+### Testing
+
+
+```bash
+# Navigate back to apiscout directory
+$ cd ../..
+
+# Open kubernetes service url in a web browser to see sample application api specification in swagger format
+$ make minikube-show
+
+```
+
+### Cleanup
+
+```bash
+# Delete sample application from Kubernetes
+$ cd samples/invoiceservice-go
+$ make clean-kube
+
+# Delete apiscout from Kubernetes
+$ cd ../..
+$ make clean-kube
+
+# Stop minikube
+$ make minikube-stop
+```
+
 ## License
 See the [LICENSE](./LICENSE) file
 

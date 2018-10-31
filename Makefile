@@ -45,8 +45,7 @@ build-docker: ## Builds a docker image from the dist directory
 	cp -R ./nginx/ ./dist/nginx
 	cd dist && docker build . -t $(DOCKERREPO)/apiscout:latest
 
-build-all: ## Performs clean-all and executes all build targets
-	clean-all build-site build-server build-docker
+build-all: clean-all build-site build-server build-docker ## Performs clean-all and executes all build targets
 
 #--- Run targets ---
 run-server: ## Builds the  in the server directory and runs it with default settings
@@ -81,8 +80,7 @@ minikube-start: ## Start Minikube with default configuration
 	sudo -E minikube start --vm-driver=none
 minikube-stop: ## Stop Minikube
 	minikube stop
-minikube-delete: ## Delete the Minikube installation
-	minikube-stop
+minikube-delete: minikube-stop ## Delete the Minikube installation
 	minikube delete
 minikube-show: ## Show the API Scout UI that is deployed to Minikube
 	open `minikube service apiscout-svc --url`
