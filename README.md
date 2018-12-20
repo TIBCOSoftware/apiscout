@@ -52,6 +52,7 @@ apiscout looks for two annotations to be able to index a service:
 
 * `apiscout/index: 'true'` This annotation ensures that apiscout indexes the service
 * `apiscout/swaggerUrl: '/swaggerspec'` This is the URL from where apiscout will read the OpenAPI document
+* `apiscout/swaggerBaseUrl: 'ingress-host-path'` This annotation is used to invoke your service if ingress is configured.
 
 ## Environment variables for the docker container
 

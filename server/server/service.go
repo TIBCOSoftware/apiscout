@@ -18,6 +18,8 @@ const (
 	annotation = "apiscout/index"
 	// The annotation for apiscout to get the OpenAPI doc from
 	swaggerURL = "apiscout/swaggerUrl"
+	// The annotation for swagger Base URL
+	swaggerBaseURL = "apiscout/swaggerBaseUrl"
 )
 
 // handleService takes the Kubernetes service object and the EventType as input to determine what
@@ -91,13 +93,23 @@ func add(service *v1.Service, srv *Server) error {
 			port = service.Spec.Ports[0].Port
 		}
 
-		apidoc, err := util.GetAPIDoc(fmt.Sprintf("http://%s:%d%s", ip, port, service.Annotations[swaggerURL]))
+		url := fmt.Sprintf("http://%s:%d%s", ip, port, service.Annotations[swaggerURL])
+
+		apidoc, err := util.GetAPIDoc(url)
 		if err != nil {
-			log.Printf("Error while retrieving API document from %s: %s", fmt.Sprintf("http://%s:%d%s", ip, port, service.Annotations[swaggerURL]), err.Error())
+			log.Printf("Error while retrieving API document from %s: %s", url, err.Error())
 			return err
 		}
 
-		util.WriteSwaggerToDisk(service.Name, apidoc, fmt.Sprintf("%s:%d", ip, port), srv.SwaggerStore, srv.HugoStore)
+		// capturing swagger base URL from annotations
+		var hostAdd string
+		if len(service.Annotations[swaggerBaseURL]) == 0 {
+			hostAdd = fmt.Sprintf("%s:%d", ip, port)
+		} else {
+			hostAdd = service.Annotations[swaggerBaseURL]
+		}
+
+		util.WriteSwaggerToDisk(service.Name, apidoc, hostAdd, srv.SwaggerStore, srv.HugoStore)
 
 		srv.ServiceMap[service.Name] = "DONE"
 		log.Printf("Service %s has been added to API Scout\n", service.Name)
