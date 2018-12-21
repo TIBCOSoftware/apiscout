@@ -141,6 +141,41 @@ $ make clean-kube
 # Stop minikube
 $ make minikube-stop
 ```
+## Publish to Mashery Cloud Feature
+API Scout is also designed to publish the registered microservices into mashery cloud. In order to acheive this user has to follow below steps.
+
+Provide annotations in microservice configuration yml:
+* `apiscout/publishToMashery: 'true'` This decides enabling or disabling pulish to mashery feature.
+* `masheryCreatePackagePlan: 'true'` This is used to create package and plan. Configuration details can be sent through mashery api template file.
+* `masheryPublishDocType: 'SWAGGER'` This decides type of document to publish.
+
+Mashery cloud connection details should be configured at API Scout docker container environment variables:
+* **USERNAME**: Mashery API Username
+* **PASSWORD**: Mashery API Password
+* **APIKEY**: Mashery API Key
+* **APISECRETE**: Mashery API Secrete
+* **AREAID**: Mashery API Area Id
+* **AREADOMAIN**: Mashery API Area Domain
+
+Published API details can be configured through mashery template file present in root folder of apiscout. Sample config shown below.
+```json
+{
+    "api":{
+        "qpsLimitOverall":0,
+        "endpoint":{
+            "requestAuthenticationType":"apiKeyAndSecret_SHA256"
+        }
+    },
+    "package":{
+        "sharedSecretLength":10,
+        "description":"First Template Package",
+        "plan":{
+            "selfServiceKeyProvisioningEnabled":false,
+            "description":"Fisrt Template plan description"
+        }
+    }
+}
+```
 
 ## License
 See the [LICENSE](./LICENSE) file
