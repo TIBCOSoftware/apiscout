@@ -33,6 +33,9 @@ metadata:
   annotations:
     apiscout/index: 'true'
     apiscout/swaggerUrl: '/swaggerspec'
+    apiscout/publishToMashery: 'true'
+    masheryCreatePackagePlan: 'true'
+    masheryPublishDocType: 'SWAGGER'
 spec:
   ports:
   - port: 80

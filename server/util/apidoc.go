@@ -3,7 +3,6 @@ package util
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -46,19 +45,7 @@ func GetAPIDoc(url string) (string, error) {
 
 // WriteSwaggerToDisk takes a swagger document and writes both its content as well as a hugo template to disk
 // to enable the static site to be updated with the new API
-func WriteSwaggerToDisk(name string, apidoc string, svchost string, swaggerStore string, hugoStore string) error {
-	// Unmarshal the string into a proper document
-	var swagger map[string]interface{}
-	if err := json.Unmarshal([]byte(apidoc), &swagger); err != nil {
-		log.Printf("error while unmarshaling JSON: %s", err.Error())
-		return fmt.Errorf("error while unmarshaling JSON: %s", err.Error())
-	}
-
-	// Update the host information
-	if _, ok := swagger["host"]; ok {
-		swagger["host"] = svchost
-	}
-
+func WriteSwaggerToDisk(name string, apibytes []byte, docTitle string, swaggerStore string, hugoStore string) error {
 	// Determine where to save the file
 	filename := filepath.Join(swaggerStore, fmt.Sprintf("%s.json", strings.Replace(strings.ToLower(name), " ", "-", -1)))
 	log.Printf("Preparing to write %s to disk", filename)
@@ -79,13 +66,6 @@ func WriteSwaggerToDisk(name string, apidoc string, svchost string, swaggerStore
 		return fmt.Errorf("error while opening file: %s", err.Error())
 	}
 
-	// Serialize the OpenAPI doc
-	apibytes, err := json.Marshal(swagger)
-	if err != nil {
-		log.Printf("error while marshaling API: %s", err.Error())
-		return fmt.Errorf("error while marshaling API: %s", err.Error())
-	}
-
 	// Write the OpenAPI doc to disk
 	_, err = file.Write(apibytes)
 	if err != nil {
@@ -94,13 +74,8 @@ func WriteSwaggerToDisk(name string, apidoc string, svchost string, swaggerStore
 	}
 
 	// Prepare the Markdown file for Hugo
-	var title string
-	if val, ok := swagger["info"].(map[string]interface{})["title"]; ok {
-		title = val.(string)
-	}
-
 	dataMap := make(map[string]interface{})
-	dataMap["title"] = title
+	dataMap["title"] = docTitle
 	dataMap["json"] = fmt.Sprintf("{{< oas3 url=\"../../../swaggerdocs/%s.json\" >}}", strings.Replace(strings.ToLower(name), " ", "-", -1))
 
 	// Render the Markdown file based on the template

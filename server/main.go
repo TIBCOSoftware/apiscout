@@ -54,8 +54,17 @@ func main() {
 	}
 	log.Printf("------------------------------------------------------------\n")
 
+	mshryInfo := server.MasheryInfo{
+		UserName:   util.GetEnvKey("USERNAME", ""),
+		Password:   util.GetEnvKey("PASSWORD", ""),
+		APIKey:     util.GetEnvKey("APIKEY", ""),
+		APISecret:  util.GetEnvKey("APISECRETE", ""),
+		AreaID:     util.GetEnvKey("AREAID", ""),
+		AreaDomain: util.GetEnvKey("AREADOMAIN", ""),
+	}
+
 	// Create a new APIScout server instance
-	srv, err := server.New(swaggerStore, hugoStore, runMode, externalIP, hugoDir)
+	srv, err := server.New(swaggerStore, hugoStore, runMode, externalIP, hugoDir, mshryInfo)
 	if err != nil {
 		panic(err.Error())
 	}

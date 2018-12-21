@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: apiscout
-        image:
+        image: naresh/apiscout:latest
         env:
         - name: MODE
           value: "KUBE"
@@ -39,6 +39,18 @@ spec:
           value: "/tmp"
         - name: EXTERNALIP
           value: "192.168.99.100"
+        - name:  USERNAME
+          value: "MASHERY-USERNAME"
+        - name: PASSWORD
+          value: "MASHERY-PWD"
+        - name: APIKEY
+          value: "MASHERY-API-KEY"
+        - name: APISECRETE
+          value: "MASHERY-API-SECRETE"
+        - name: AREAID
+          value: "MASHERY-AREA-ID"
+        - name: AREADOMAIN
+          value: "MASHERY-AREA-DOMAIN"
         imagePullPolicy: Never
         ports:
         - containerPort: 80

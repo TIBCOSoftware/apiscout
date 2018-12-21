@@ -2,7 +2,9 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -18,7 +20,19 @@ const (
 	annotation = "apiscout/index"
 	// The annotation for apiscout to get the OpenAPI doc from
 	swaggerURL = "apiscout/swaggerUrl"
+
+	publishToMasheryVal = "apiscout/publishToMashery"
+	createPlanVal       = "masheryCreatePackagePlan"
+	docTypeVal          = "masheryPublishDocType"
 )
+
+type Info struct {
+	Info Title `json:"info"`
+}
+
+type Title struct {
+	TitleVal string `json:"title"`
+}
 
 // handleService takes the Kubernetes service object and the EventType as input to determine what
 // to do with the event
@@ -97,10 +111,68 @@ func add(service *v1.Service, srv *Server) error {
 			return err
 		}
 
-		util.WriteSwaggerToDisk(service.Name, apidoc, fmt.Sprintf("%s:%d", ip, port), srv.SwaggerStore, srv.HugoStore)
+		// Unmarshal the string into a proper document
+		var swagger map[string]interface{}
+		if err := json.Unmarshal([]byte(apidoc), &swagger); err != nil {
+			log.Printf("error while unmarshaling JSON: %s", err.Error())
+			return fmt.Errorf("error while unmarshaling JSON: %s", err.Error())
+		}
+
+		// Update the host information
+		if _, ok := swagger["host"]; ok {
+			swagger["host"] = fmt.Sprintf("%s:%d", ip, port)
+		}
+
+		var docTitle string
+		if val, ok := swagger["info"].(map[string]interface{})["title"]; ok {
+			docTitle = val.(string)
+		}
+
+		// Serialize the OpenAPI doc
+		apibytes, err := json.Marshal(swagger)
+		if err != nil {
+			log.Printf("error while marshaling API: %s", err.Error())
+			return fmt.Errorf("error while marshaling API: %s", err.Error())
+		}
+
+		util.WriteSwaggerToDisk(service.Name, apibytes, docTitle, srv.SwaggerStore, srv.HugoStore)
 
 		srv.ServiceMap[service.Name] = "DONE"
 		log.Printf("Service %s has been added to API Scout\n", service.Name)
+
+		//////// PUBLISH TO MASHERY CODE ////////////
+		if strings.Compare(strings.ToUpper(service.Annotations[publishToMasheryVal]), "TRUE") == 0 {
+
+			docType := service.Annotations[docTypeVal]
+			createPlan := false
+			if strings.Compare(strings.ToUpper(service.Annotations[createPlanVal]), "TRUE") == 0 {
+				createPlan = true
+			}
+			// setting default vaue if doc type not annotated in yml
+			if len(docType) == 0 {
+				docType = "IODOC"
+			}
+
+			//default api template
+			apiTemplate := "/tmp/masheryTemplate.json"
+			var apiTemplateJSON []byte
+			_, err := os.Stat(apiTemplate)
+			if err == nil {
+				apiTemplateJSON, err = ioutil.ReadFile(apiTemplate)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+
+			user := APIUser{Username: srv.MasheryDetails.UserName, Password: srv.MasheryDetails.Password, APIKey: srv.MasheryDetails.APIKey, APISecretKey: srv.MasheryDetails.APISecret, UUID: srv.MasheryDetails.AreaID, Portal: srv.MasheryDetails.AreaDomain, Noop: false}
+
+			err = PublishToMashery(&user, string(apibytes), docType, createPlan, apiTemplateJSON)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+		}
+
 	}
 
 	return nil
@@ -112,7 +184,18 @@ func remove(service *v1.Service, srv *Server) error {
 
 	// Remove JSON file
 	filename := filepath.Join(srv.SwaggerStore, fmt.Sprintf("%s.json", strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
-	err := os.Remove(filename)
+
+	apiDoc, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	f := &Info{}
+	if err = json.Unmarshal(apiDoc, f); err != nil {
+		panic(err)
+	}
+
+	err = os.Remove(filename)
 	if err != nil {
 		return err
 	}
@@ -127,6 +210,10 @@ func remove(service *v1.Service, srv *Server) error {
 	// Remove service from service map
 	delete(srv.ServiceMap, service.Name)
 	log.Printf("Service %s has been removed from API Scout\n", service.Name)
+
+	user := APIUser{Username: srv.MasheryDetails.UserName, Password: srv.MasheryDetails.Password, APIKey: srv.MasheryDetails.APIKey, APISecretKey: srv.MasheryDetails.APISecret, UUID: srv.MasheryDetails.AreaID, Portal: srv.MasheryDetails.AreaDomain, Noop: false}
+
+	RemoveFromMashery(&user, f.Info.TitleVal)
 
 	return nil
 }

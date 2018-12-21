@@ -7,4 +7,6 @@ RUN wget https://github.com/gohugoio/hugo/releases/download/v0.45.1/hugo_0.45.1_
     && cd /tmp \
     && hugo \
     && cp ./nginx/default.conf /etc/nginx/conf.d/default.conf
+RUN apk update
+RUN apk add ca-certificates
 CMD ["/bin/sh", "/tmp/nginx/start.sh"]

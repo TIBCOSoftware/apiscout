@@ -1,0 +1,16 @@
+{
+    "api":{
+        "qpsLimitOverall":0,
+        "endpoint":{
+            "requestAuthenticationType":"apiKeyAndSecret_SHA256"
+        }
+    },
+    "package":{
+        "sharedSecretLength":10,
+        "description":"First Template Package",
+        "plan":{
+            "selfServiceKeyProvisioningEnabled":false,
+            "description":"Fisrt Template plan description"
+        }
+    }
+}

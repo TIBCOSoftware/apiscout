@@ -26,18 +26,31 @@ type Server struct {
 	ExternalIP string
 	// The base directory for Hugo
 	HugoDir string
+	// Mashery Information
+	MasheryDetails MasheryInfo
+}
+
+// MasheryInfo mashery Connectivity Details
+type MasheryInfo struct {
+	UserName   string
+	Password   string
+	APIKey     string
+	APISecret  string
+	AreaID     string
+	AreaDomain string
 }
 
 // New creates a new instance of the Server
-func New(swaggerStore string, hugoStore string, runMode string, externalIP string, hugoDir string) (*Server, error) {
+func New(swaggerStore string, hugoStore string, runMode string, externalIP string, hugoDir string, masheryInfo MasheryInfo) (*Server, error) {
 	// Return a new struct
 	return &Server{
-		ServiceMap:   make(map[string]string),
-		SwaggerStore: swaggerStore,
-		HugoStore:    hugoStore,
-		RunMode:      runMode,
-		ExternalIP:   externalIP,
-		HugoDir:      hugoDir,
+		ServiceMap:     make(map[string]string),
+		SwaggerStore:   swaggerStore,
+		HugoStore:      hugoStore,
+		RunMode:        runMode,
+		ExternalIP:     externalIP,
+		HugoDir:        hugoDir,
+		MasheryDetails: masheryInfo,
 	}, nil
 }
 

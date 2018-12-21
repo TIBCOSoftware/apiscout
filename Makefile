@@ -43,6 +43,7 @@ build-server: ## Builds the server app in dist
 build-docker: ## Builds a docker image from the dist directory
 	cp Dockerfile ./dist/Dockerfile
 	cp -R ./nginx/ ./dist/nginx
+	cp masheryTemplate.json ./dist/masheryTemplate.json
 	cd dist && docker build . -t $(DOCKERREPO)/apiscout:latest
 
 build-all: clean-all build-site build-server build-docker ## Performs clean-all and executes all build targets
@@ -50,10 +51,10 @@ build-all: clean-all build-site build-server build-docker ## Performs clean-all 
 #--- Run targets ---
 run-server: ## Builds the  in the server directory and runs it with default settings
 	cd server && go generate && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../dist/server *.go
-	MODE=LOCAL HUGODIR=$(CURRDIR)/webapp HUGOSTORE=$(CURRDIR)/webapp/content/apis SWAGGERSTORE=$(CURRDIR)/webapp/static/swaggerdocs EXTERNALIP=$(EXTIP) ./dist/server
+	MODE=LOCAL HUGODIR=$(CURRDIR)/webapp HUGOSTORE=$(CURRDIR)/webapp/content/apis SWAGGERSTORE=$(CURRDIR)/webapp/static/swaggerdocs EXTERNALIP=$(EXTIP) USERNAME=MASHERY-USERNAME PASSWORD=MASHERY-PWD APIKEY=MASHERY-API-KEY APISECRETE=MASHERY-API-SECRETE AREAID=MASHERY-AREA-ID AREADOMAIN=MASHERY-AREA-DOMAIN ./dist/server
 
 run-docker: ## Runs a docker container with default settings
-	docker run -it --rm -p 80:80 -v $(HOME)/.kube:/root/.kube -v $(HOME)/.minikube:/home/$(USER)/.minikube -e MODE=LOCAL -e HUGODIR="/tmp" -e EXTERNALIP=$(EXTIP) -e HUGOCMD="sh -c \"cd /tmp && hugo\"" --name=apiscout $(DOCKERREPO)/apiscout:latest
+	docker run -it --rm -p 80:80 -v $(HOME)/.kube:/root/.kube -v $(HOME)/.minikube:/home/$(USER)/.minikube -e MODE=LOCAL -e HUGODIR="/tmp" -e EXTERNALIP=$(EXTIP) -e USERNAME=MASHERY-USERNAME -e PASSWORD=MASHERY-PWD -e APIKEY=MASHERY-API-KEY -e APISECRETE=MASHERY-API-SECRETE -e AREAID=MASHERY-AREA-ID -e AREADOMAIN=MASHERY-AREA-DOMAIN -e HUGOCMD="sh -c \"cd /tmp && hugo\"" --name=apiscout $(DOCKERREPO)/apiscout:latest
 
 run-hugo: ## Runs the embedded Hugo server on port 1313
 	cd webapp && hugo server -D --disableFastRender
@@ -77,7 +78,7 @@ minikube-start: ## Start Minikube with default configuration
 	export MINIKUBE_HOME=$(HOME)
 	export CHANGE_MINIKUBE_NONE_USER=true
 	export KUBECONFIG=$(HOME)/.kube/config
-	sudo -E minikube start --vm-driver=none
+	sudo -E minikube start
 minikube-stop: ## Stop Minikube
 	minikube stop
 minikube-delete: minikube-stop ## Delete the Minikube installation
