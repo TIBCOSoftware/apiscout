@@ -126,6 +126,7 @@ $ cd ../..
 $ make minikube-show
 
 ```
+Note: If you face any issue with above command in linux, update Makefile with `xdg-open` instead of `open` command under `minikube-show` target.
 
 ### Cleanup
 

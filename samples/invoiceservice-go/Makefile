@@ -27,6 +27,7 @@ build-app:
 build-docker:
 	cp Dockerfile dist/Dockerfile
 	cp swagger.json dist/swagger.json
+	eval $$(minikube docker-env) ;\
 	cd dist && docker build -t $(DOCKERHUBUSER)/invoiceservice-go:$(DOCKERTAG) .
 
 #--- Run the container ---
