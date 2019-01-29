@@ -43,7 +43,8 @@ build-server: ## Builds the server app in dist
 build-docker: ## Builds a docker image from the dist directory
 	cp Dockerfile ./dist/Dockerfile
 	cp -R ./nginx/ ./dist/nginx
-	cd dist && docker build . -t $(DOCKERREPO)/apiscout:latest
+	eval $$(minikube docker-env) ;\
+	cd dist && docker image build . -t $(DOCKERREPO)/apiscout:latest
 
 build-all: clean-all build-site build-server build-docker ## Performs clean-all and executes all build targets
 
@@ -72,12 +73,7 @@ stop-docker: ## Stop and remove the running apiscout container
 minikube-install: ## Install Minikube on this machine
 	curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && sudo cp minikube /usr/local/bin/ && rm minikube
 minikube-start: ## Start Minikube with default configuration
-	export MINIKUBE_WANTUPDATENOTIFICATION=false
-	export MINIKUBE_WANTREPORTERRORPROMPT=false
-	export MINIKUBE_HOME=$(HOME)
-	export CHANGE_MINIKUBE_NONE_USER=true
-	export KUBECONFIG=$(HOME)/.kube/config
-	sudo -E minikube start --vm-driver=none
+	minikube start
 minikube-stop: ## Stop Minikube
 	minikube stop
 minikube-delete: minikube-stop ## Delete the Minikube installation
