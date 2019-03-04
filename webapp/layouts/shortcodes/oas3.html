@@ -41,6 +41,7 @@
       // Build a system
       const ui = SwaggerUIBundle({
         url: "{{ .Get "url" }}",
+        validatorUrl : false,
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [

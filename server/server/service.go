@@ -9,15 +9,19 @@ import (
 	"strings"
 
 	"github.com/TIBCOSoftware/apiscout/server/util"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/watch"
 )
 
 const (
 	// The annotation for apiscout to index a service
 	annotation = "apiscout/index"
+	// The annotation for apiscout to know which type of api
+	apiTypeAnnotation = "apiscout/apiType"
 	// The annotation for apiscout to get the OpenAPI doc from
 	swaggerURL = "apiscout/swaggerUrl"
+	// The annotation for apiscout to get the AsyncAPI doc from
+	asyncAPIURL = "apiscout/asyncApiUrl"
 )
 
 // handleService takes the Kubernetes service object and the EventType as input to determine what
@@ -82,6 +86,8 @@ func add(service *v1.Service, srv *Server) error {
 
 		var ip string
 		var port int32
+		var apiType string
+		var docURL string
 
 		if len(srv.ExternalIP) > 0 {
 			ip = srv.ExternalIP
@@ -91,13 +97,28 @@ func add(service *v1.Service, srv *Server) error {
 			port = service.Spec.Ports[0].Port
 		}
 
-		apidoc, err := util.GetAPIDoc(fmt.Sprintf("http://%s:%d%s", ip, port, service.Annotations[swaggerURL]))
+		if strings.Compare(strings.ToUpper(service.Annotations[apiTypeAnnotation]), "ASYNCAPI") == 0 {
+			apiType = "ASYNCAPI"
+			docURL = service.Annotations[asyncAPIURL]
+		} else {
+			apiType = "SWAGGERAPI"
+			docURL = service.Annotations[swaggerURL]
+		}
+
+		apidoc, err := util.GetAPIDoc(fmt.Sprintf("http://%s:%d%s", ip, port, docURL))
+		fmt.Println("am here apfer apidoc")
+		fmt.Println(apiType, apidoc)
+
 		if err != nil {
-			log.Printf("Error while retrieving API document from %s: %s", fmt.Sprintf("http://%s:%d%s", ip, port, service.Annotations[swaggerURL]), err.Error())
+			log.Printf("Error while retrieving API document from %s: %s", fmt.Sprintf("http://%s:%d%s", ip, port, docURL), err.Error())
 			return err
 		}
 
-		util.WriteSwaggerToDisk(service.Name, apidoc, fmt.Sprintf("%s:%d", ip, port), srv.SwaggerStore, srv.HugoStore)
+		if strings.Compare(apiType, "SWAGGERAPI") == 0 {
+			util.WriteSwaggerToDisk(service.Name, apidoc, fmt.Sprintf("%s:%d", ip, port), srv.SwaggerStore, srv.HugoStore)
+		} else {
+			util.GenerateMarkdownFile(srv.AsyncDocStore, srv.AsyncMdStore, apidoc, service.Name)
+		}
 
 		srv.ServiceMap[service.Name] = "DONE"
 		log.Printf("Service %s has been added to API Scout\n", service.Name)
@@ -110,15 +131,25 @@ func add(service *v1.Service, srv *Server) error {
 func remove(service *v1.Service, srv *Server) error {
 	log.Printf("Attempting to delete %s\n", service.Name)
 
+	var docPath, markDwnFile string
+
+	if strings.Compare(strings.ToUpper(service.Annotations[apiTypeAnnotation]), "ASYNCAPI") == 0 {
+		docPath = srv.AsyncDocStore
+		markDwnFile = srv.AsyncMdStore
+	} else {
+		docPath = srv.SwaggerStore
+		markDwnFile = srv.HugoStore
+	}
+
 	// Remove JSON file
-	filename := filepath.Join(srv.SwaggerStore, fmt.Sprintf("%s.json", strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
+	filename := filepath.Join(docPath, fmt.Sprintf("%s.json", strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
 	err := os.Remove(filename)
 	if err != nil {
 		return err
 	}
 
 	// Remove Markdown file
-	filename = filepath.Join(srv.HugoStore, fmt.Sprintf("%s.md", strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
+	filename = filepath.Join(markDwnFile, fmt.Sprintf("%s.md", strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
 	err = os.Remove(filename)
 	if err != nil {
 		return err

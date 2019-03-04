@@ -6,5 +6,8 @@ RUN wget https://github.com/gohugoio/hugo/releases/download/v0.45.1/hugo_0.45.1_
     && ln -s /tmp/public/ /usr/share/nginx/html \
     && cd /tmp \
     && hugo \
-    && cp ./nginx/default.conf /etc/nginx/conf.d/default.conf
+    && cp ./nginx/default.conf /etc/nginx/conf.d/default.conf \
+    && apk update \
+    && apk add nodejs npm \
+    && npm install -g asyncapi-generator
 CMD ["/bin/sh", "/tmp/nginx/start.sh"]

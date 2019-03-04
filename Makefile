@@ -51,7 +51,7 @@ build-all: clean-all build-site build-server build-docker ## Performs clean-all 
 #--- Run targets ---
 run-server: ## Builds the  in the server directory and runs it with default settings
 	cd server && go generate && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../dist/server *.go
-	MODE=LOCAL HUGODIR=$(CURRDIR)/webapp HUGOSTORE=$(CURRDIR)/webapp/content/apis SWAGGERSTORE=$(CURRDIR)/webapp/static/swaggerdocs EXTERNALIP=$(EXTIP) ./dist/server
+	MODE=LOCAL ASYNCMDSTORE=$(CURRDIR)/webapp/content/apis/asyncapis  ASYNCDOCSTORE=$(CURRDIR)/webapp/static/asyncapidocs HUGODIR=$(CURRDIR)/webapp HUGOSTORE=$(CURRDIR)/webapp/content/apis/otherapis SWAGGERSTORE=$(CURRDIR)/webapp/static/swaggerdocs EXTERNALIP=$(EXTIP) ./dist/server
 
 run-docker: ## Runs a docker container with default settings
 	docker run -it --rm -p 80:80 -v $(HOME)/.kube:/root/.kube -v $(HOME)/.minikube:/home/$(USER)/.minikube -e MODE=LOCAL -e HUGODIR="/tmp" -e EXTERNALIP=$(EXTIP) -e HUGOCMD="sh -c \"cd /tmp && hugo\"" --name=apiscout $(DOCKERREPO)/apiscout:latest
