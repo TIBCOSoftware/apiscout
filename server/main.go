@@ -28,7 +28,7 @@ var (
 	// The location where to store the swaggerdocs
 	swaggerStore = util.GetEnvKey("SWAGGERSTORE", "/tmp/static/swaggerdocs")
 	// The location where to store content for Hugo
-	hugoStore = util.GetEnvKey("HUGOSTORE", "/tmp/content/apis/otherapis")
+	hugoStore = util.GetEnvKey("HUGOSTORE", "/tmp/content/apis")
 	// The mode in which apiscout is running (can be either KUBE or LOCAL)
 	runMode = util.GetEnvKey("MODE", "LOCAL")
 	// The external IP address of the Kubernetes cluster in case of LOCAL mode
@@ -37,8 +37,6 @@ var (
 	hugoDir = util.GetEnvKey("HUGODIR", "")
 	// The localtion where to store async api docs
 	asyncDocStore = util.GetEnvKey("ASYNCDOCSTORE", "/tmp/static/asyncapidocs")
-	// The location where to store async api markdown files
-	asyncMdStore = util.GetEnvKey("ASYNCMDSTORE", "/tmp/content/apis/asyncapis")
 )
 
 // main is the main entrypoint to start APIScout
@@ -59,7 +57,7 @@ func main() {
 	log.Printf("------------------------------------------------------------\n")
 
 	// Create a new APIScout server instance
-	srv, err := server.New(swaggerStore, hugoStore, runMode, externalIP, hugoDir, asyncDocStore, asyncMdStore)
+	srv, err := server.New(swaggerStore, hugoStore, runMode, externalIP, hugoDir, asyncDocStore)
 	if err != nil {
 		panic(err.Error())
 	}

@@ -106,8 +106,6 @@ func add(service *v1.Service, srv *Server) error {
 		}
 
 		apidoc, err := util.GetAPIDoc(fmt.Sprintf("http://%s:%d%s", ip, port, docURL))
-		fmt.Println("am here apfer apidoc")
-		fmt.Println(apiType, apidoc)
 
 		if err != nil {
 			log.Printf("Error while retrieving API document from %s: %s", fmt.Sprintf("http://%s:%d%s", ip, port, docURL), err.Error())
@@ -117,7 +115,7 @@ func add(service *v1.Service, srv *Server) error {
 		if strings.Compare(apiType, "SWAGGERAPI") == 0 {
 			util.WriteSwaggerToDisk(service.Name, apidoc, fmt.Sprintf("%s:%d", ip, port), srv.SwaggerStore, srv.HugoStore)
 		} else {
-			util.GenerateMarkdownFile(srv.AsyncDocStore, srv.AsyncMdStore, apidoc, service.Name)
+			util.GenerateMarkdownFile(srv.AsyncDocStore, srv.HugoStore, apidoc, service.Name)
 		}
 
 		srv.ServiceMap[service.Name] = "DONE"
@@ -131,14 +129,12 @@ func add(service *v1.Service, srv *Server) error {
 func remove(service *v1.Service, srv *Server) error {
 	log.Printf("Attempting to delete %s\n", service.Name)
 
-	var docPath, markDwnFile string
+	var docPath string
 
 	if strings.Compare(strings.ToUpper(service.Annotations[apiTypeAnnotation]), "ASYNCAPI") == 0 {
 		docPath = srv.AsyncDocStore
-		markDwnFile = srv.AsyncMdStore
 	} else {
 		docPath = srv.SwaggerStore
-		markDwnFile = srv.HugoStore
 	}
 
 	// Remove JSON file
@@ -149,7 +145,7 @@ func remove(service *v1.Service, srv *Server) error {
 	}
 
 	// Remove Markdown file
-	filename = filepath.Join(markDwnFile, fmt.Sprintf("%s.md", strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
+	filename = filepath.Join(srv.HugoStore, fmt.Sprintf("%s.md", strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
 	err = os.Remove(filename)
 	if err != nil {
 		return err

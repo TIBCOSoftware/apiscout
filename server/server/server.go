@@ -28,12 +28,10 @@ type Server struct {
 	HugoDir string
 	// The localtion where to store async api docs
 	AsyncDocStore string
-	// The location where to store async api markdown files
-	AsyncMdStore string
 }
 
 // New creates a new instance of the Server
-func New(swaggerStore string, hugoStore string, runMode string, externalIP string, hugoDir string, asyncDocStore, asyncMdStore string) (*Server, error) {
+func New(swaggerStore string, hugoStore string, runMode string, externalIP string, hugoDir string, asyncDocStore string) (*Server, error) {
 	// Return a new struct
 	return &Server{
 		ServiceMap:    make(map[string]string),
@@ -43,7 +41,6 @@ func New(swaggerStore string, hugoStore string, runMode string, externalIP strin
 		ExternalIP:    externalIP,
 		HugoDir:       hugoDir,
 		AsyncDocStore: asyncDocStore,
-		AsyncMdStore:  asyncMdStore,
 	}, nil
 }
 

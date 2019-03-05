@@ -16,6 +16,7 @@ import (
 const asyncMarkdown = `---
 title: {{.title}}
 weight: 1000
+post: "<sup><i>asyncapi</i></sup>"
 ---
 
 {{.content}}`
@@ -23,7 +24,7 @@ weight: 1000
 // GenerateMarkdownFile generates markdown file for asyncapi docs
 func GenerateMarkdownFile(srcFile, destFile, apiDoc, serviceName string) error {
 
-	log.Print("Writing json file from received data")
+	log.Print("Writing file from received data")
 
 	asyncFile := filepath.Join(srcFile, fmt.Sprintf("%s.json", strings.Replace(strings.ToLower(serviceName), " ", "-", -1)))
 	log.Printf("Preparing to write %s to disk", asyncFile)
@@ -56,7 +57,7 @@ func GenerateMarkdownFile(srcFile, destFile, apiDoc, serviceName string) error {
 	buf := &bytes.Buffer{}
 
 	dataMap := make(map[string]interface{})
-	dataMap["title"] = "testingapidoc"
+	dataMap["title"] = serviceName
 	dataMap["content"] = string(data)
 
 	if err := t.Execute(buf, dataMap); err != nil {

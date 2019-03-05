@@ -8,9 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/watch"
-
-	"k8s.io/api/core/v1"
 )
 
 const swaggerJSONPayload = `{
@@ -163,7 +162,7 @@ func TestHandleService(t *testing.T) {
 
 	os.MkdirAll(tempPath, 0777)
 
-	srv, err := New(tempPath, tempPath, runMode, externalIP, tempPath)
+	srv, err := New(tempPath, tempPath, runMode, externalIP, tempPath, "", "")
 	if err != nil {
 		panic(err.Error())
 	}

@@ -3,43 +3,42 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    run: invoice-go-svc
-  name: invoice-go-svc
+    run: streetlights-go-svc
+  name: streetlights-go-svc
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: invoice-go-svc
+      run: streetlights-go-svc
   template:
     metadata:
       labels:
-        run: invoice-go-svc
+        run: streetlights-go-svc
     spec:
       containers:
-      - name: invoice-go-svc
-        image: retgits/invoiceservice-go:latest
+      - name: streetlights-go-svc
+        image: naresh/streetlightsapp-go:latest
         imagePullPolicy: Never
         ports:
-        - containerPort: 8080
+        - containerPort: 8090
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    run: invoice-go-svc
-  name: invoice-go-svc
+    run: streetlights-go-svc
+  name: streetlights-go-svc
   namespace: default
   annotations:
     apiscout/index: 'true'
-    # apiscout/apiType: 'ASYNCAPI'
-    # apiscout/asyncApiUrl: '/asyncapispec'
-    apiscout/swaggerUrl: '/swaggerspec'
+    apiscout/apiType: 'ASYNCAPI'
+    apiscout/asyncApiUrl: '/asyncapispec'
 spec:
   ports:
   - port: 80
     protocol: TCP
-    targetPort: 8080
+    targetPort: 8090
   selector:
-    run: invoice-go-svc
+    run: streetlights-go-svc
   type: LoadBalancer
