@@ -32,7 +32,6 @@ metadata:
   namespace: default
   annotations:
     apiscout/index: 'true'
-    apiscout/apiType: 'ASYNCAPI'
     apiscout/asyncApiUrl: '/asyncapispec'
 spec:
   ports:

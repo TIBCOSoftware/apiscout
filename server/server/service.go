@@ -16,8 +16,6 @@ import (
 const (
 	// The annotation for apiscout to index a service
 	annotation = "apiscout/index"
-	// The annotation for apiscout to know which type of api
-	apiTypeAnnotation = "apiscout/apiType"
 	// The annotation for apiscout to get the OpenAPI doc from
 	swaggerURL = "apiscout/swaggerUrl"
 	// The annotation for apiscout to get the AsyncAPI doc from
@@ -86,8 +84,6 @@ func add(service *v1.Service, srv *Server) error {
 
 		var ip string
 		var port int32
-		var apiType string
-		var docURL string
 
 		if len(srv.ExternalIP) > 0 {
 			ip = srv.ExternalIP
@@ -97,29 +93,26 @@ func add(service *v1.Service, srv *Server) error {
 			port = service.Spec.Ports[0].Port
 		}
 
-		if strings.Compare(strings.ToUpper(service.Annotations[apiTypeAnnotation]), "ASYNCAPI") == 0 {
-			apiType = "ASYNCAPI"
-			docURL = service.Annotations[asyncAPIURL]
-		} else {
-			apiType = "SWAGGERAPI"
-			docURL = service.Annotations[swaggerURL]
+		multipleAPIMap := getAllApis(service)
+
+		for apiType, docURL := range multipleAPIMap {
+
+			apidoc, err := util.GetAPIDoc(fmt.Sprintf("http://%s:%d%s", ip, port, docURL))
+
+			if err != nil {
+				log.Printf("Error while retrieving API document from %s: %s", fmt.Sprintf("http://%s:%d%s", ip, port, docURL), err.Error())
+				return err
+			}
+
+			if strings.Compare(apiType, "OPENAPI") == 0 {
+				util.WriteSwaggerToDisk(service.Name, apidoc, fmt.Sprintf("%s:%d", ip, port), srv.SwaggerStore, srv.HugoStore)
+			} else {
+				util.GenerateMarkdownFile(srv.AsyncDocStore, srv.HugoStore, apidoc, service.Name)
+			}
+
+			srv.ServiceMap[service.Name] = "DONE"
+			log.Printf("Service %s has been added to API Scout\n", service.Name)
 		}
-
-		apidoc, err := util.GetAPIDoc(fmt.Sprintf("http://%s:%d%s", ip, port, docURL))
-
-		if err != nil {
-			log.Printf("Error while retrieving API document from %s: %s", fmt.Sprintf("http://%s:%d%s", ip, port, docURL), err.Error())
-			return err
-		}
-
-		if strings.Compare(apiType, "SWAGGERAPI") == 0 {
-			util.WriteSwaggerToDisk(service.Name, apidoc, fmt.Sprintf("%s:%d", ip, port), srv.SwaggerStore, srv.HugoStore)
-		} else {
-			util.GenerateMarkdownFile(srv.AsyncDocStore, srv.HugoStore, apidoc, service.Name)
-		}
-
-		srv.ServiceMap[service.Name] = "DONE"
-		log.Printf("Service %s has been added to API Scout\n", service.Name)
 	}
 
 	return nil
@@ -131,29 +124,48 @@ func remove(service *v1.Service, srv *Server) error {
 
 	var docPath string
 
-	if strings.Compare(strings.ToUpper(service.Annotations[apiTypeAnnotation]), "ASYNCAPI") == 0 {
-		docPath = srv.AsyncDocStore
-	} else {
-		docPath = srv.SwaggerStore
-	}
+	multipleAPIMap := getAllApis(service)
 
-	// Remove JSON file
-	filename := filepath.Join(docPath, fmt.Sprintf("%s.json", strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
-	err := os.Remove(filename)
-	if err != nil {
-		return err
-	}
+	for apiType := range multipleAPIMap {
 
-	// Remove Markdown file
-	filename = filepath.Join(srv.HugoStore, fmt.Sprintf("%s.md", strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
-	err = os.Remove(filename)
-	if err != nil {
-		return err
-	}
+		if strings.Compare(strings.ToUpper(apiType), "ASYNCAPI") == 0 {
+			docPath = srv.AsyncDocStore
+		} else {
+			docPath = srv.SwaggerStore
+		}
 
-	// Remove service from service map
-	delete(srv.ServiceMap, service.Name)
-	log.Printf("Service %s has been removed from API Scout\n", service.Name)
+		// Remove JSON file
+		filename := filepath.Join(docPath, fmt.Sprintf("%s.json", strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
+		err := os.Remove(filename)
+		if err != nil {
+			return err
+		}
+
+		// Remove Markdown file
+		filename = filepath.Join(srv.HugoStore, fmt.Sprintf("%s-%s.md", strings.Replace(strings.ToLower(service.Name), " ", "-", -1), strings.ToLower(apiType)))
+		err = os.Remove(filename)
+		if err != nil {
+			return err
+		}
+
+		// Remove service from service map
+		delete(srv.ServiceMap, service.Name)
+		log.Printf("Service %s has been removed from API Scout\n", service.Name)
+	}
 
 	return nil
+}
+
+func getAllApis(service *v1.Service) map[string]string {
+	multiAPIMap := make(map[string]string)
+
+	if len(service.Annotations[asyncAPIURL]) != 0 {
+		multiAPIMap["ASYNCAPI"] = service.Annotations[asyncAPIURL]
+	}
+
+	if len(service.Annotations[swaggerURL]) != 0 {
+		multiAPIMap["OPENAPI"] = service.Annotations[swaggerURL]
+	}
+
+	return multiAPIMap
 }

@@ -2,6 +2,7 @@ package util
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -56,8 +57,20 @@ func GenerateMarkdownFile(srcFile, destFile, apiDoc, serviceName string) error {
 	t := template.Must(template.New("top").Parse(asyncMarkdown))
 	buf := &bytes.Buffer{}
 
+	// Unmarshal the string into a proper document
+	var docContent map[string]interface{}
+	if err := json.Unmarshal([]byte(apiDoc), &docContent); err != nil {
+		log.Printf("error while unmarshaling apidoc: %s", err.Error())
+		return fmt.Errorf("error while unmarshaling apidoc: %s", err.Error())
+	}
+
+	var title string
+	if val, ok := docContent["info"].(map[string]interface{})["title"]; ok {
+		title = val.(string)
+	}
+
 	dataMap := make(map[string]interface{})
-	dataMap["title"] = serviceName
+	dataMap["title"] = title
 	dataMap["content"] = string(data)
 
 	if err := t.Execute(buf, dataMap); err != nil {
@@ -67,7 +80,7 @@ func GenerateMarkdownFile(srcFile, destFile, apiDoc, serviceName string) error {
 	s := buf.String()
 
 	// Determine where to save the file
-	mdFilename := filepath.Join(destFile, fmt.Sprintf("%s.md", strings.Replace(strings.ToLower(serviceName), " ", "-", -1)))
+	mdFilename := filepath.Join(destFile, fmt.Sprintf("%s-asyncapi.md", strings.Replace(strings.ToLower(serviceName), " ", "-", -1)))
 	log.Printf("Preparing to write %s to disk", mdFilename)
 	os.Remove(mdFilename)
 

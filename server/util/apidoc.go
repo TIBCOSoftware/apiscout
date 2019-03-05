@@ -114,7 +114,7 @@ func WriteSwaggerToDisk(name string, apidoc string, svchost string, swaggerStore
 	s := buf.String()
 
 	// Determine where to save the file
-	filename = filepath.Join(hugoStore, fmt.Sprintf("%s.md", strings.Replace(strings.ToLower(name), " ", "-", -1)))
+	filename = filepath.Join(hugoStore, fmt.Sprintf("%s-openapi.md", strings.Replace(strings.ToLower(name), " ", "-", -1)))
 	log.Printf("Preparing to write %s to disk", filename)
 	os.Remove(filename)
 
