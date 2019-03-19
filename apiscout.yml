@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: apiscout
-        image: naresh/apiscout
+        image: 
         env:
         - name: MODE
           value: "KUBE"

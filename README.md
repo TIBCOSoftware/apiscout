@@ -52,6 +52,7 @@ apiscout looks for two annotations to be able to index a service:
 
 * `apiscout/index: 'true'` This annotation ensures that apiscout indexes the service
 * `apiscout/swaggerUrl: '/swaggerspec'` This is the URL from where apiscout will read the OpenAPI document
+* `apiscout/asyncApiUrl: '/asyncapispec'` This is the URL from where apiscout will read the AsyncAPI document
 
 ## Environment variables for the docker container
 
