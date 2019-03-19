@@ -50,3 +50,15 @@ func createFileWithContent(filename, content string) error {
 
 	return nil
 }
+
+// CreateFolder creates folder for given path
+func CreateFolder(path string) error {
+	_, err := os.Stat(path)
+	if err != nil {
+		err = os.MkdirAll(path, 0777)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

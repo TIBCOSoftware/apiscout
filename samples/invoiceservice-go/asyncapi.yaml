@@ -1,6 +1,6 @@
 asyncapi: "1.2.0"
 info:
-  title: AsyncAPI Sample
+  title: invoiceservice
   version: "1.0.0"
   x-logo: https://avatars0.githubusercontent.com/u/16401334?v=4&s=200
   description: |

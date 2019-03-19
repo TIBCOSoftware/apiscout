@@ -15,9 +15,9 @@ import (
 
 // A template for the Markdown file for Hugo
 const asyncMarkdown = `---
-title: {{.title}}
+title: {{.title}}-asyncapi
 weight: 1000
-post: "<sup><i>asyncapi</i></sup>"
+#post: "<sup><i>asyncapi</i></sup>"
 ---
 
 {{.content}}`
@@ -80,7 +80,7 @@ func GenerateMarkdownFile(srcFile, destFile, apiDoc, serviceName string) error {
 	s := buf.String()
 
 	// Determine where to save the file
-	mdFilename := filepath.Join(destFile, fmt.Sprintf("%s-asyncapi.md", strings.Replace(strings.ToLower(serviceName), " ", "-", -1)))
+	mdFilename := filepath.Join(destFile, strings.Replace(strings.ToLower(serviceName), " ", "-", -1), fmt.Sprintf("%s-asyncapi.md", strings.Replace(strings.ToLower(serviceName), " ", "-", -1)))
 	log.Printf("Preparing to write %s to disk", mdFilename)
 	os.Remove(mdFilename)
 

@@ -57,7 +57,7 @@ run-docker: ## Runs a docker container with default settings
 	docker run -it --rm -p 80:80 -v $(HOME)/.kube:/root/.kube -v $(HOME)/.minikube:/home/$(USER)/.minikube -e MODE=LOCAL -e HUGODIR="/tmp" -e EXTERNALIP=$(EXTIP) -e HUGOCMD="sh -c \"cd /tmp && hugo\"" --name=apiscout $(DOCKERREPO)/apiscout:latest
 
 run-hugo: ## Runs the embedded Hugo server on port 1313
-	cd webapp && hugo server -D --disableFastRender
+	cd webapp && hugo server --renderToDisk
 
 run-docs: ## Runs the embedded Hugo server on port 1313 for the documentation
 	cd docs && hugo server -D --disableFastRender --themesDir ../webapp/themes

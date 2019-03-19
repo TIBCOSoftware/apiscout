@@ -93,9 +93,17 @@ func add(service *v1.Service, srv *Server) error {
 			port = service.Spec.Ports[0].Port
 		}
 
-		multipleAPIMap := getAllApis(service)
+		apis := getApis(service)
 
-		for apiType, docURL := range multipleAPIMap {
+		// create service name folder
+		serviceFold := filepath.Join(srv.HugoStore, strings.Replace(strings.ToLower(service.Name), " ", "-", -1))
+		err := util.CreateFolder(serviceFold)
+		if err != nil {
+			log.Fatalln("Error while creating service name folder ", err)
+			return err
+		}
+
+		for apiType, docURL := range apis {
 
 			apidoc, err := util.GetAPIDoc(fmt.Sprintf("http://%s:%d%s", ip, port, docURL))
 
@@ -105,14 +113,26 @@ func add(service *v1.Service, srv *Server) error {
 			}
 
 			if strings.Compare(apiType, "OPENAPI") == 0 {
-				util.WriteSwaggerToDisk(service.Name, apidoc, fmt.Sprintf("%s:%d", ip, port), srv.SwaggerStore, srv.HugoStore)
+				err = util.WriteSwaggerToDisk(service.Name, apidoc, fmt.Sprintf("%s:%d", ip, port), srv.SwaggerStore, srv.HugoStore)
 			} else {
-				util.GenerateMarkdownFile(srv.AsyncDocStore, srv.HugoStore, apidoc, service.Name)
+				err = util.GenerateMarkdownFile(srv.AsyncDocStore, srv.HugoStore, apidoc, service.Name)
 			}
 
-			srv.ServiceMap[service.Name] = "DONE"
-			log.Printf("Service %s has been added to API Scout\n", service.Name)
+			if err != nil {
+				log.Fatalf(" Service %s addition failed for doc type %s ", service.Name, apiType)
+				return err
+			}
 		}
+
+		// create service markup file
+		err = util.WriteServiceMarkdownFile(serviceFold, strings.Replace(strings.ToLower(service.Name), " ", "-", -1))
+		if err != nil {
+			log.Fatal("Error while creating service markup file ", err)
+			return err
+		}
+
+		srv.ServiceMap[service.Name] = "DONE"
+		log.Printf("Service %s has been added to API Scout\n", service.Name)
 	}
 
 	return nil
@@ -124,9 +144,9 @@ func remove(service *v1.Service, srv *Server) error {
 
 	var docPath string
 
-	multipleAPIMap := getAllApis(service)
+	apis := getApis(service)
 
-	for apiType := range multipleAPIMap {
+	for apiType := range apis {
 
 		if strings.Compare(strings.ToUpper(apiType), "ASYNCAPI") == 0 {
 			docPath = srv.AsyncDocStore
@@ -142,21 +162,26 @@ func remove(service *v1.Service, srv *Server) error {
 		}
 
 		// Remove Markdown file
-		filename = filepath.Join(srv.HugoStore, fmt.Sprintf("%s-%s.md", strings.Replace(strings.ToLower(service.Name), " ", "-", -1), strings.ToLower(apiType)))
+		filename = filepath.Join(srv.HugoStore, strings.Replace(strings.ToLower(service.Name), " ", "-", -1), fmt.Sprintf("%s-%s.md", strings.Replace(strings.ToLower(service.Name), " ", "-", -1), strings.ToLower(apiType)))
 		err = os.Remove(filename)
 		if err != nil {
 			return err
 		}
 
-		// Remove service from service map
-		delete(srv.ServiceMap, service.Name)
-		log.Printf("Service %s has been removed from API Scout\n", service.Name)
 	}
+
+	// Remove service markup file and folder
+	os.RemoveAll(filepath.Join(srv.HugoStore, strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
+	os.Remove(filepath.Join(srv.HugoStore, strings.Replace(strings.ToLower(service.Name), " ", "-", -1)))
+
+	// Remove service from service map
+	delete(srv.ServiceMap, service.Name)
+	log.Printf("Service %s has been removed from API Scout\n", service.Name)
 
 	return nil
 }
 
-func getAllApis(service *v1.Service) map[string]string {
+func getApis(service *v1.Service) map[string]string {
 	multiAPIMap := make(map[string]string)
 
 	if len(service.Annotations[asyncAPIURL]) != 0 {

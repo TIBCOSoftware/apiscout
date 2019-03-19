@@ -136,7 +136,7 @@ func getEnvKey(key string, fallback string) string {
 	return fallback
 }
 
-// YamlSpec is the function that gets executedto retrieve the SwaggerSpec
+// YamlSpec is the function that gets executedto retrieve the AsynSpec
 func YamlSpec(ctx context.Context, inputs map[string]*data.Attribute) (map[string]*data.Attribute, error) {
 	// The return message is a map[string]*data.Attribute which we'll have to construct
 	response := make(map[string]interface{})
