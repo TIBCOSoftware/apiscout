@@ -31,14 +31,14 @@ spec:
     spec:
       containers:
       - name: apiscout
-        image: naresh/apiscout:latest
+        image: 
         env:
         - name: MODE
           value: "KUBE"
         - name: HUGODIR
           value: "/tmp"
         - name: EXTERNALIP
-          value: "192.168.99.101"
+          value: "192.168.99.100"
         imagePullPolicy: Never
         ports:
         - containerPort: 80
