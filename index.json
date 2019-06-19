@@ -1,0 +1,64 @@
+[
+{
+	"uri": "https://tibcosoftware.github.io/apiscout/",
+	"title": "Home",
+	"tags": [],
+	"description": "",
+	"content": " API Scout Finding Your APIs In Kubernetes\n"
+},
+{
+	"uri": "https://tibcosoftware.github.io/apiscout/what-is-apiscout/",
+	"title": "What is API Scout?",
+	"tags": [],
+	"description": "",
+	"content": " What is API Scout As we\u0026rsquo;re all building and deploying microservices, there are a few common concerns that every developer and Ops has:\n “where did I deploy that microservice?” 😩 “what is the API definition of that microservice again?“ 😟  When your deployment footprint grows, keeping track of all those deployed microservices on Kubernetes can become quite a challenge. Keeping the API documentation updated for developers, could become even more challenging. API Scout is an attempt to solve that challenge. API Scout helps you get up-to-date API docs to your developers by simply annotating your services in Kubernetes.\nHow it works API Scout catalogs and documents your Kubernetes microservices to, ultimately, productize them as APIs\u000busing an API management platform. To do that it:\n Automatically discover microservices with annotations Generates beautiful pixel-perfect OAS/Swagger-based API Docs Has first-class support for Kubernetes, PKS \u0026amp; OpenShift Is 100% Open Source, so free to use \u0026amp; build on  "
+},
+{
+	"uri": "https://tibcosoftware.github.io/apiscout/getting-started/",
+	"title": "Getting Started",
+	"tags": [],
+	"description": "",
+	"content": " Workflow To use API Scout with any of your microservices, existing or new, you\u0026rsquo;ll need to follow three easy steps\nStep 1: Build a microservice The first step is to build your microservice or identify an existing microservice. The microservice that you want to index with API Scout needs to have an endpoint available that returns the OpenAPI specification\nStep 2: Annotate it The second step is to annotate your K8s service definition. The Kubernetes deployment file needs two specific annotations for API Scout to work:\n apiscout/index: 'true': This annotation ensures that apiscout indexes the service apiscout/swaggerUrl: '/swaggerspec': This is the URL from where apiscout will read the OpenAPI document  Step 3: Access the portal The third step is easy! Access your microservices documentation through the portal\u0026hellip;\nIn the background While you\u0026rsquo;re deploying microservices to Kubernetes, API Scout takes care of a few things. API Scout registers a watcher for Service event updates. Once an event comes in, API Scout will update its registry to reflect the change in the API.\nLet\u0026rsquo;s say that a developer is working on an update to a microservice. Once the developer is done and deploys the changes, the developer also makes sure the service definition has the annotations for API Scout included.\nThe Kubernetes API Server receives the updates made to the service by the the developer and dispatches an event to all watchers. API Scout, being one of those watchers updates its registry to reflect the change in the API.\nThe developer goes to the documentation portal and sees the updated API documentation.\n"
+},
+{
+	"uri": "https://tibcosoftware.github.io/apiscout/deploying-apiscout/",
+	"title": "Deploying API Scout",
+	"tags": [],
+	"description": "",
+	"content": " Deploy to Kubernetes You can deploy API Scout to Kubernetes by following three easy steps\nStep 1: Create an RBAC role Assuming you want to run API Scout inside your Kubernetes cluster, which is the recommended option, you\u0026rsquo;ll need to create an RBAC role so that the ServiceAccount has view access to the Kubernetes API server. This is the least privileged option for API Scout.\napiVersion: rbac.authorization.k8s.io/v1beta1 kind: ClusterRoleBinding metadata: name: default-view roleRef: apiGroup: rbac.authorization.k8s.io kind: ClusterRole name: view subjects: - kind: ServiceAccount name: default namespace: default  Step 2: Create a deployment The second step is to create a deployment, instructing Kubernetes to deploy API Scout. Using the template yaml file below, there are a few parameters you can update:\n image: The name of the docker image to deploy EXTERNALIP: The value decides if the basePath of an API specification will be overwritten with this value to enable the \u0026ldquo;try it out\u0026rdquo; option SWAGGERSTORE: The location where to store the swaggerdocs HUGOSTORE: The location where to store content for Hugo MODE: The mode in which apiscout is running (can be either KUBE or LOCAL) HUGODIR: The base directory for Hugo  apiVersion: extensions/v1beta1 kind: Deployment metadata: labels: run: apiscout name: apiscout namespace: default spec: replicas: 1 selector: matchLabels: run: apiscout template: metadata: labels: run: apiscout spec: containers: - name: apiscout image: \u0026lt;your image\u0026gt; env: - name: MODE value: \u0026quot;KUBE\u0026quot; - name: HUGODIR value: \u0026quot;/tmp\u0026quot; - name: EXTERNALIP value: \u0026quot;192.168.99.100\u0026quot; imagePullPolicy: Never ports: - containerPort: 80  Step 3: Create a service To allow access to the documentation portal, the final step is to create a service. The below template will instruct Kubernetes to make API Scout available to the outside world on port 8181.\napiVersion: v1 kind: Service metadata: labels: run: apiscout-svc name: apiscout-svc namespace: default spec: ports: - port: 8181 protocol: TCP targetPort: 80 selector: run: apiscout type: LoadBalancer  Complete yaml With YAML you can combine the above steps into a single document. If you prefer that, the complete document will look like:\n--- apiVersion: rbac.authorization.k8s.io/v1beta1 kind: ClusterRoleBinding metadata: name: default-view roleRef: apiGroup: rbac.authorization.k8s.io kind: ClusterRole name: view subjects: - kind: ServiceAccount name: default namespace: default --- apiVersion: extensions/v1beta1 kind: Deployment metadata: labels: run: apiscout name: apiscout namespace: default spec: replicas: 1 selector: matchLabels: run: apiscout template: metadata: labels: run: apiscout spec: containers: - name: apiscout image: retgits/apiscout:latest env: - name: MODE value: \u0026quot;KUBE\u0026quot; - name: HUGODIR value: \u0026quot;/tmp\u0026quot; - name: EXTERNALIP value: \u0026quot;192.168.99.100\u0026quot; imagePullPolicy: Never ports: - containerPort: 80 --- apiVersion: v1 kind: Service metadata: labels: run: apiscout-svc name: apiscout-svc namespace: default spec: ports: - port: 8181 protocol: TCP targetPort: 80 selector: run: apiscout type: LoadBalancer  "
+},
+{
+	"uri": "https://tibcosoftware.github.io/apiscout/building-apiscout/",
+	"title": "Building API Scout",
+	"tags": [],
+	"description": "",
+	"content": " Building API Scout API Scout has a Makefile that can be used for most of the operations. Make sure you have installed Go Programming Language, set GOPATH variable and added $GOPATH/bin in your PATH\nusage: make [target]  Build targets    Target Description     deps Get dependencies to build the server   build-all Performs clean-all and executes all build targets   build-docker Builds a docker image from the dist directory   build-server Builds the server app in dist   build-site Builds the Hugo distribution in dist    Clean targets    Target Description     clean-all Removes the dist directory   clean-docker Stops and removes all containers and images for apiscout   clean-kube Removes the apiscout service and deployment from Kubernetes    Minikube targets    Target Description     minikube-delete Delete the Minikube installation   minikube-install Install Minikube on this machine   minikube-show Show the API Scout UI that is deployed to Minikube   minikube-start Start Minikube with default configuration   minikube-stop Stop Minikube    Docker targets    Target Description     run-docker Runs a docker container with default settings   run-docs Runs the embedded Hugo server on port 1313 for the documentation   run-hugo Runs the embedded Hugo server on port 1313   run-kube Deploys apiscout to Kubernetes   run-server Builds the in the server directory and runs it with default settings   stop-docker Stop and remove the running apiscout container    "
+},
+{
+	"uri": "https://tibcosoftware.github.io/apiscout/contributing/",
+	"title": "Contributing",
+	"tags": [],
+	"description": "",
+	"content": " Contributing to API Scout Are you interested in contributing to API Scout? If so, this doc was created specifically for you! If you’re not ready to start contributing code, no problem, feel free to check out any of the issues and begin by helping to enhance any other part of the tool!\nHow to make a contribution Never made an open source contribution before? Wondering how contributions work in our project? Here\u0026rsquo;s a quick rundown!\nIf you have any questions, feel free to post an issue and tag it as a question:\n Find an issue that you are interested in addressing or a feature that you would like to add. Look for issues labeled good first issue, kind/help-wanted if you’re unsure where to begin. Fork the repository associated with the issue to your local GitHub account. This means that you will have a copy of the repository under github-username/repository-name. Clone the repository to your local machine using git clone https://github.com/github-username/repository-name.git. Create a new branch for your fix using git checkout -b branch-name-here. Make the appropriate changes for the issue you are trying to address or the feature that you want to add. Use git add insert-paths-of-changed-files-here to add the file contents of the changed files to the \u0026ldquo;snapshot\u0026rdquo; git uses to manage the state of the project, also known as the index. Use git commit -m \u0026quot;Insert a short message of the changes made here\u0026quot; to store the contents of the index with a descriptive message. Push the changes to the remote repository using git push origin branch-name-here. Submit a pull request to the upstream repository. Title the pull request with a short description of the changes made and the issue or bug number associated with your change. For example, you can title an issue like: \u0026ldquo;Updating docs as outlined in #4352\u0026rdquo;. In the description of the pull request, explain the changes that you made, any issues you think exist with the pull request you made, and any questions you have for the maintainers. Wait for the pull request to be reviewed by a maintainers. Make changes to the pull request if the reviewing maintainer recommends them. Congratulations, you’ve contributed to API Scout and a celebration is in order!  "
+},
+{
+	"uri": "https://tibcosoftware.github.io/apiscout/dependencies/",
+	"title": "Dependencies",
+	"tags": [],
+	"description": "",
+	"content": " What are the components of API Scout The docker image that is deployed to Kubernetes has several components:\n The container itself is based on nginx:1.15-alpine The webapp is a staticly generated site by Hugo using the Learn theme and Swagger UI A server app that connects to the Kubernetes cluster using a default role to watch for services that need to be indexed  Hugo is downloaded and embedded during the build of the container\nLogo The logo made by Freepik from www.flaticon.com is licensed by CC 3.0 BY\n"
+},
+{
+	"uri": "https://tibcosoftware.github.io/apiscout/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "https://tibcosoftware.github.io/apiscout/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]

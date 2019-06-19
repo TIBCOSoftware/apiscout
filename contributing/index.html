@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.49" />
+    <meta name="description" content="Documentation for API Scout">
+<meta name="author" content="API Scout">
+
+    <link rel="shortcut icon" href="/apiscout/images/favicon.png" type="image/x-icon" />
+<link rel="icon" href="/apiscout/images/favicon.png" type="image/x-icon" />
+    <title>Contributing :: API Scout :: Finding your APIs in Kubernetes</title>
+    
+    
+    <link href="/apiscout/css/nucleus.css?1560941496" rel="stylesheet">
+    <link href="/apiscout/css/font-awesome.min.css?1560941496" rel="stylesheet">
+    <link href="/apiscout/css/hybrid.css?1560941496" rel="stylesheet">
+    <link href="/apiscout/css/featherlight.min.css?1560941496" rel="stylesheet">
+    <link href="/apiscout/css/perfect-scrollbar.min.css?1560941496" rel="stylesheet">
+    <link href="/apiscout/css/auto-complete.css?1560941496" rel="stylesheet">
+    <link href="/apiscout/css/theme.css?1560941496" rel="stylesheet">
+    <link href="/apiscout/css/hugo-theme.css?1560941496" rel="stylesheet">
+    
+      <link href="/apiscout/css/theme-green.css?1560941496" rel="stylesheet">
+    
+
+    <script src="/apiscout/js/jquery-3.x.min.js?1560941496"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/apiscout/contributing/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <svg xmlns="http://www.w3.org/2000/svg" height="128px" version="1.1" viewBox="-16 1 511 511.99975" width="128px">
+	<g id="surface1">
+	<path d="M 293.582031 416.996094 C 290.621094 420.269531 286.539062 421.9375 282.433594 421.9375 C 279.003906 421.9375 275.5625 420.769531 272.738281 418.386719 C 271.75 417.535156 271.058594 416.957031 270.9375 416.855469 C 262.402344 409.832031 251.96875 406.210938 241.472656 406 C 230.074219 405.78125 218.589844 409.582031 209.394531 417.445312 L 208.042969 418.597656 C 205.222656 421.007812 201.75 422.1875 198.308594 422.1875 C 193.945312 422.1875 189.613281 420.308594 186.628906 416.636719 C 181.46875 410.261719 182.609375 400.847656 188.84375 395.511719 L 189.890625 394.625 C 204.691406 381.964844 223.121094 375.773438 241.472656 376.003906 C 258.441406 376.210938 275.339844 381.90625 289.25 393.0625 C 289.558594 393.3125 290.660156 394.234375 292.121094 395.472656 C 298.605469 400.945312 299.273438 410.703125 293.582031 416.996094 Z M 293.582031 416.996094 " style=" stroke:none;fill-rule:nonzero;fill:rgb(88.235294%,92.156863%,94.117647%);fill-opacity:1;" />
+	<path d="M 42.8125 414.074219 L 15.507812 414.074219 C 7.21875 414.074219 0.5 407.351562 0.5 399.066406 C 0.5 390.777344 7.21875 384.054688 15.507812 384.054688 L 42.8125 384.054688 C 51.101562 384.054688 57.820312 390.777344 57.820312 399.066406 C 57.820312 407.351562 51.101562 414.074219 42.8125 414.074219 Z M 42.8125 414.074219 " style=" stroke:none;fill-rule:nonzero;fill:rgb(88.235294%,92.156863%,94.117647%);fill-opacity:1;" />
+	<path d="M 465.144531 414.074219 L 437.839844 414.074219 C 429.550781 414.074219 422.832031 407.351562 422.832031 399.066406 C 422.832031 390.777344 429.550781 384.054688 437.839844 384.054688 L 465.144531 384.054688 C 473.433594 384.054688 480.152344 390.777344 480.152344 399.066406 C 480.152344 407.351562 473.433594 414.074219 465.144531 414.074219 Z M 465.144531 414.074219 " style=" stroke:none;fill-rule:nonzero;fill:rgb(70.588235%,82.352941%,84.313725%);fill-opacity:1;" />
+	<path d="M 480.15625 210.269531 C 480.15625 240.59375 453.523438 267.902344 405.183594 287.132812 C 361.210938 304.621094 303.066406 314.257812 241.472656 314.257812 C 179.867188 314.257812 121.734375 304.621094 77.757812 287.132812 C 29.410156 267.902344 2.785156 240.59375 2.785156 210.269531 C 2.785156 193.539062 11.050781 168.882812 50.394531 146.421875 C 54.046875 144.339844 57.847656 142.371094 61.851562 140.488281 C 65.011719 139.007812 68.304688 137.578125 71.753906 136.1875 L 80.800781 132.542969 C 81.261719 127.910156 81.761719 123.410156 82.320312 119.027344 C 90.125 57.042969 107.484375 19.980469 135.132812 6.042969 C 168.949219 -11.015625 206.210938 12.054688 228.472656 25.84375 C 232.746094 28.484375 238.320312 31.9375 241.472656 33.457031 C 244.625 31.9375 250.195312 28.484375 254.46875 25.84375 C 276.730469 12.054688 313.992188 -11.015625 347.8125 6.042969 C 375.148438 19.828125 392.425781 56.230469 400.363281 116.984375 C 401.011719 122.007812 401.601562 127.191406 402.132812 132.542969 L 411.1875 136.195312 C 414.128906 137.375 416.953125 138.585938 419.664062 139.828125 C 424.207031 141.910156 428.46875 144.089844 432.550781 146.421875 C 471.894531 168.882812 480.15625 193.539062 480.15625 210.269531 Z M 480.15625 210.269531 " style=" stroke:none;fill-rule:nonzero;fill:rgb(41.176471%,43.137255%,45.098039%);fill-opacity:1;" />
+	<path d="M 293.582031 416.996094 C 290.621094 420.269531 286.539062 421.9375 282.433594 421.9375 C 279.003906 421.9375 275.5625 420.769531 272.738281 418.386719 C 271.75 417.535156 271.058594 416.957031 270.9375 416.855469 C 262.402344 409.832031 251.96875 406.210938 241.472656 406 L 241.472656 376.003906 C 258.441406 376.210938 275.339844 381.90625 289.25 393.0625 C 289.558594 393.3125 290.660156 394.234375 292.121094 395.472656 C 298.605469 400.945312 299.273438 410.703125 293.582031 416.996094 Z M 293.582031 416.996094 " style=" stroke:none;fill-rule:nonzero;fill:rgb(70.588235%,82.352941%,84.313725%);fill-opacity:1;" />
+	<path d="M 480.15625 210.269531 C 480.15625 240.59375 453.523438 267.902344 405.183594 287.132812 C 361.210938 304.621094 303.066406 314.257812 241.472656 314.257812 L 241.472656 33.457031 C 244.625 31.9375 250.195312 28.484375 254.46875 25.84375 C 276.730469 12.054688 313.992188 -11.015625 347.8125 6.042969 C 375.148438 19.828125 392.425781 56.230469 400.363281 116.984375 C 401.011719 122.007812 401.601562 127.191406 402.132812 132.542969 L 411.1875 136.195312 C 414.128906 137.375 416.953125 138.585938 419.664062 139.828125 C 424.207031 141.910156 428.46875 144.089844 432.550781 146.421875 C 471.894531 168.882812 480.15625 193.539062 480.15625 210.269531 Z M 480.15625 210.269531 " style=" stroke:none;fill-rule:nonzero;fill:rgb(21.568627%,23.529412%,25.490196%);fill-opacity:1;" />
+	<path d="M 419.664062 139.828125 C 406.714844 149.613281 393.566406 157.589844 393.179688 157.808594 C 350.683594 181.023438 296.921875 193.789062 241.472656 193.789062 C 186.171875 193.789062 132.578125 181.089844 90.136719 158.007812 C 89.535156 157.6875 74.078125 149.582031 61.851562 140.488281 C 65.011719 139.007812 68.304688 137.578125 71.753906 136.1875 L 80.800781 132.542969 C 81.261719 127.910156 81.761719 123.410156 82.320312 119.027344 C 92.488281 125.699219 104.59375 131.703125 105.253906 132.0625 C 143.246094 152.527344 191.445312 163.773438 241.472656 163.773438 C 286.476562 163.773438 330.011719 154.667969 365.953125 137.9375 C 368.195312 136.898438 383.511719 127.671875 400.363281 116.984375 C 401.011719 122.007812 401.601562 127.191406 402.132812 132.542969 L 411.1875 136.195312 C 414.128906 137.375 416.953125 138.585938 419.664062 139.828125 Z M 419.664062 139.828125 " style=" stroke:none;fill-rule:nonzero;fill:rgb(82.352941%,62.745098%,96.078431%);fill-opacity:1;" />
+	<path d="M 211.066406 419.488281 C 211.066406 470.496094 169.570312 512 118.5625 512 C 67.554688 512 26.058594 470.496094 26.058594 419.488281 C 26.058594 368.476562 67.554688 326.984375 118.5625 326.984375 C 169.570312 326.984375 211.066406 368.476562 211.066406 419.488281 Z M 211.066406 419.488281 " style=" stroke:none;fill-rule:nonzero;fill:rgb(41.176471%,43.137255%,45.098039%);fill-opacity:1;" />
+	<path d="M 454.324219 419.488281 C 454.324219 470.496094 412.828125 512 361.820312 512 C 310.8125 512 269.316406 470.496094 269.316406 419.488281 C 269.316406 368.476562 310.8125 326.984375 361.820312 326.984375 C 412.828125 326.984375 454.324219 368.476562 454.324219 419.488281 Z M 454.324219 419.488281 " style=" stroke:none;fill-rule:nonzero;fill:rgb(21.568627%,23.529412%,25.490196%);fill-opacity:1;" />
+	<path d="M 419.664062 139.828125 C 406.714844 149.613281 393.566406 157.589844 393.179688 157.808594 C 350.683594 181.023438 296.921875 193.789062 241.472656 193.789062 L 241.472656 163.773438 C 286.476562 163.773438 330.011719 154.667969 365.953125 137.9375 C 368.195312 136.898438 383.511719 127.671875 400.363281 116.984375 C 401.011719 122.007812 401.601562 127.191406 402.132812 132.542969 L 411.1875 136.195312 C 414.128906 137.375 416.953125 138.585938 419.664062 139.828125 Z M 419.664062 139.828125 " style=" stroke:none;fill-rule:nonzero;fill:rgb(63.529412%,37.647059%,89.803922%);fill-opacity:1;" />
+	</g>
+	</svg>
+<p style="color: #000000; font-weight: bold;">API Scout</p>
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fa fa-search"></i></label>
+    <input data-search-input id="search-by" type="text" placeholder="Search...">
+    <span data-search-clear=""><i class="fa fa-close"></i></span>
+</div>
+
+<script type="text/javascript" src="/apiscout/js/lunr.min.js?1560941496"></script>
+<script type="text/javascript" src="/apiscout/js/auto-complete.js?1560941496"></script>
+<script type="text/javascript">
+    
+        var baseurl = '\/apiscout\/';
+    
+</script>
+<script type="text/javascript" src="/apiscout/js/search.js?1560941496"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/apiscout/what-is-apiscout/" title="What is API Scout?" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/apiscout/what-is-apiscout/">
+          What is API Scout?
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/apiscout/getting-started/" title="Getting Started" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/apiscout/getting-started/">
+          Getting Started
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/apiscout/deploying-apiscout/" title="Deploying API Scout" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/apiscout/deploying-apiscout/">
+          Deploying API Scout
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/apiscout/building-apiscout/" title="Building API Scout" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/apiscout/building-apiscout/">
+          Building API Scout
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/apiscout/contributing/" title="Contributing" class="dd-item 
+        parent
+        active
+        
+        ">
+      <a href="/apiscout/contributing/">
+          Contributing
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/apiscout/dependencies/" title="Dependencies" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/apiscout/dependencies/">
+          Dependencies
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="footer">
+      &nbsp;
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            <a href='/apiscout/'>Home</a> > Contributing
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li><a href="#contributing-to-api-scout">Contributing to API Scout</a></li>
+<li><a href="#how-to-make-a-contribution">How to make a contribution</a></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+          
+
+        
+
+
+
+
+<h1 id="contributing-to-api-scout">Contributing to API Scout</h1>
+
+<p>Are you interested in contributing to API Scout? If so, this doc was created specifically for you! If you’re not ready to start contributing code, no problem, feel free to check out any of the issues and begin by helping to enhance any other part of the tool!</p>
+
+<h1 id="how-to-make-a-contribution">How to make a contribution</h1>
+
+<p>Never made an open source contribution before? Wondering how contributions work in our project? Here&rsquo;s a quick rundown!</p>
+
+<p>If you have any questions, feel free to post an issue and tag it as a question:</p>
+
+<ul>
+<li>Find an issue that you are interested in addressing or a feature that you would like to add. Look for issues labeled <code>good first issue</code>, <code>kind/help-wanted</code> if you’re unsure where to begin.</li>
+<li>Fork the repository associated with the issue to your local GitHub account. This means that you will have a copy of the repository under github-username/repository-name.</li>
+<li>Clone the repository to your local machine using <code>git clone https://github.com/github-username/repository-name.git</code>.</li>
+<li>Create a new branch for your fix using <code>git checkout -b branch-name-here</code>.</li>
+<li>Make the appropriate changes for the issue you are trying to address or the feature that you want to add.</li>
+<li>Use <code>git add insert-paths-of-changed-files-here</code> to add the file contents of the changed files to the &ldquo;snapshot&rdquo; git uses to manage the state of the project, also known as the index.</li>
+<li>Use <code>git commit -m &quot;Insert a short message of the changes made here&quot;</code> to store the contents of the index with a descriptive message.</li>
+<li>Push the changes to the remote repository using <code>git push origin branch-name-here</code>.</li>
+<li>Submit a pull request to the upstream repository.</li>
+<li>Title the pull request with a short description of the changes made and the issue or bug number associated with your change. For example, you can title an issue like: &ldquo;Updating docs as outlined in #4352&rdquo;.</li>
+<li>In the description of the pull request, explain the changes that you made, any issues you think exist with the pull request you made, and any questions you have for the maintainers.</li>
+<li>Wait for the pull request to be reviewed by a maintainers.</li>
+<li>Make changes to the pull request if the reviewing maintainer recommends them.</li>
+<li>Congratulations, you’ve contributed to API Scout and a celebration is in order!</li>
+</ul>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/apiscout/js/clipboard.min.js?1560941497"></script>
+    <script src="/apiscout/js/perfect-scrollbar.min.js?1560941497"></script>
+    <script src="/apiscout/js/perfect-scrollbar.jquery.min.js?1560941497"></script>
+    <script src="/apiscout/js/jquery.sticky.js?1560941497"></script>
+    <script src="/apiscout/js/featherlight.min.js?1560941497"></script>
+    <script src="/apiscout/js/html5shiv-printshiv.min.js?1560941497"></script>
+    <script src="/apiscout/js/highlight.pack.js?1560941497"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/apiscout/js/modernizr.custom.71422.js?1560941497"></script>
+    <script src="/apiscout/js/learn.js?1560941497"></script>
+    <script src="/apiscout/js/hugo-learn.js?1560941497"></script>
+
+    <link href="/apiscout/mermaid/mermaid.css?1560941497" type="text/css" rel="stylesheet" />
+    <script src="/apiscout/mermaid/mermaid.js?1560941497"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
